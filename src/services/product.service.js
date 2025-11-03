@@ -2,6 +2,7 @@ const Product = require('../models/product.model');
 const Category = require('../models/category.model');
 const ApiError = require('../utils/ApiError');
 const slugify = require('slugify');
+const { deleteCloudinaryImage } = require('../utils/deleteImage');
 
 const createProduct = async (productBody) => {
     const category = await Category.findById(productBody.categoryId);
@@ -33,7 +34,7 @@ const addImages = async (productId, imageUrls) => {
         throw new ApiError(404, 'Sản phẩm không tồn tại');
     }
     if (Array.isArray(imageUrls) && imageUrls.length > 0) {
-        product.images.push(...imageUrls); //tránh mảng lồng nhau
+        product.images.push(...imageUrls);
     } else if (typeof imageUrls === 'string') {
         product.images.push(imageUrls);
     }
@@ -64,8 +65,7 @@ const removeImage = async (productId, imageUrl) => {
     const product = await Product.findById(productId);
     if (!product) throw new ApiError(404, 'Sản phẩm không tồn tại');
 
-    const publicId = imageUrl.split('/').pop().split('.')[0];
-    await cloudinary.uploader.destroy(`exam_uploads/${publicId}`);
+    await deleteCloudinaryImage(imageUrl)
 
     product.images = product.images.filter((img) => img !== imageUrl);
     await product.save();
@@ -78,6 +78,11 @@ const deleteProductById = async (productId) => {
     if (!product) {
         throw new ApiError(404, 'Sản phẩm không tồn tại');
     }
+
+    if (product.images && product.images.length > 0) {
+        await Promise.all(product.images.map(deleteCloudinaryImage));
+    }
+    
     await product.deleteOne();
     return product;
 };
