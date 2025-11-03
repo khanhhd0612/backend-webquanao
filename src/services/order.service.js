@@ -1,4 +1,5 @@
-const { Order, Product } = require('../models');
+const Order = require('../models/order.model');
+const Product = require('../models/product.model');
 const ApiError = require('../utils/ApiError');
 
 const validateProductAndVariant = async (productId, variant, quantity) => {
@@ -60,6 +61,15 @@ const createOrder = async (orderBody) => {
     return order;
 };
 
+const payMentByVnpay = async (orderId) => {
+    const order = await Order.findById(orderId);
+    if (!order) throw new ApiError(404, 'Order not found');
+    order.paymentMethod="VNPay";
+    order.paymentStatus="paid";
+    await order.save();
+    return order;
+}
+
 const getOrders = async (filter, options) => {
     const orders = await Order.paginate(filter, options);
     return orders;
@@ -89,5 +99,6 @@ module.exports = {
     getOrders,
     getOrderById,
     updateOrderStatus,
-    getOderOfUser
+    getOderOfUser,
+    payMentByVnpay
 };

@@ -1,4 +1,4 @@
-const { User } = require('../models');
+const User= require('../models/user.model');
 const ApiError = require('../utils/ApiError');
 
 const createUser = async (userBody) => {

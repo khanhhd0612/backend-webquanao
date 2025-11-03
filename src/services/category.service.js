@@ -1,4 +1,4 @@
-const { Category } = require('../models');
+const Category = require('../models/category.model');
 const ApiError = require('../utils/ApiError');
 
 const createCategory = async (categoryBody) => {
