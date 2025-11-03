@@ -2,11 +2,12 @@ const express = require('express');
 const validate = require('../../middlewares/validate');
 const auth = require('../../middlewares/auth');
 const categoryValidation = require('../../validations/category.validation');
+const upload = require('../../middlewares/upload');
 const categoryController = require('../../controllers/category.controller');
 
 const router = express.Router();
 
-router.post('/', auth('manageCategories'), validate(categoryValidation.createCategory), categoryController.createCategory);
+router.post('/', auth('manageCategories'), upload.single("image"), validate(categoryValidation.createCategory), categoryController.createCategory);
 
 router.get('/', validate(categoryValidation.getCategories), categoryController.getCategories);
 

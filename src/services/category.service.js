@@ -1,8 +1,8 @@
 const Category = require('../models/category.model');
 const ApiError = require('../utils/ApiError');
+const { deleteCloudinaryImage } = require('../utils/deleteImage');
 
 const createCategory = async (categoryBody) => {
-    console.log(categoryBody)
     const category = await Category.create(categoryBody);
     return category;
 }
@@ -38,6 +38,9 @@ const updateCategory = async (categoryId, updateBody) => {
     if (!category) {
         throw new ApiError(404, 'Danh mục không tồn tại');
     }
+    if (updateBody.image && category.image) {
+        await deleteCloudinaryImage(category.image)
+    }
     if (updateBody.name) {
         updateBody.slug = slugify(updateBody.name, { lower: true });
     }
@@ -52,9 +55,14 @@ const deleteCategory = async (categoryId) => {
     if (!category) {
         throw new ApiError(404, 'Danh mục không tồn tại');
     }
+
+    if (category.image) {
+        await deleteCloudinaryImage(category.image)
+    }
+
     await category.deleteOne();
     return;
-}
+};
 
 
 module.exports = {
