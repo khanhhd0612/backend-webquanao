@@ -1,7 +1,6 @@
 const passport = require("passport");
 const { Strategy: JwtStrategy, ExtractJwt } = require("passport-jwt");
 const dotenv = require("dotenv");
-const { getUserById } = require("../services/user.service");
 
 dotenv.config();
 
@@ -13,7 +12,7 @@ passport.use(
         },
         async (payload, done) => {
             try {
-                const user = await getUserById(payload.sub)
+                const user = payload
                 if (!user) return done(null, false);
                 return done(null, user);
             } catch (err) {
