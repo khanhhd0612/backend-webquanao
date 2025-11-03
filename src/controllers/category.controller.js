@@ -1,4 +1,4 @@
-const { categoryService } = require('../services');
+const categoryService = require('../services/category.service');
 const catchAsync = require('../utils/catchAsync');
 const pick = require('../utils/pick');
 
