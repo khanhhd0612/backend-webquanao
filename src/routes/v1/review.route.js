@@ -10,8 +10,6 @@ router.post('/', auth(), validate(reviewValidation.createReview), reviewControll
 
 router.get('/', validate(reviewValidation.getReviews), reviewController.getReviews);
 
-router.get('/:reviewId', auth(), validate(reviewValidation.getReview), reviewController.getReviews);
-
 router.put('/:reviewId', auth(), validate(reviewValidation.updateReview), reviewController.updateReview);
 
 router.delete('/:reviewId', auth(), validate(reviewValidation.getReview), reviewController.deleteReview);

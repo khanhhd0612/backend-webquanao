@@ -63,9 +63,11 @@ const createOrder = async (orderBody) => {
 
 const payMentByVnpay = async (orderId) => {
     const order = await Order.findById(orderId);
-    if (!order) throw new ApiError(404, 'Order not found');
+    if (!order) throw new ApiError(404, 'Không tìm thấy đơn hàng');
+
     order.paymentMethod="VNPay";
     order.paymentStatus="paid";
+    
     await order.save();
     return order;
 }
@@ -82,7 +84,7 @@ const getOderOfUser = async (userId) => {
 
 const getOrderById = async (orderId) => {
     const order = await Order.findById(orderId).populate('userId').populate('orderDetails.productId');
-    if (!order) throw new ApiError(404, 'Order not found');
+    if (!order) throw new ApiError(404, 'Không tìm thấy đơn hàng');
     return order;
 };
 

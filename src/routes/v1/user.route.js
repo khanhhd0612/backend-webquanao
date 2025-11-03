@@ -6,6 +6,6 @@ const auth = require('../../middlewares/auth');
 
 const router = express.Router();
 
-router.patch('/:userId', validate(userValidation.updateRole), userController.updateRole);
+router.patch('/:userId', auth('manageUser'), validate(userValidation.updateRole), userController.updateRole);
 
 module.exports = router;
