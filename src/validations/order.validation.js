@@ -66,9 +66,16 @@ const getOrder = {
     }),
 };
 
+const payment = {
+    body: Joi.object().keys({
+        orderId: Joi.string().custom(objectId),
+    }),
+}
+
 module.exports = {
     createOrder,
     getOrders,
     getOrder,
-    updateOrder
+    updateOrder,
+    payment
 };
