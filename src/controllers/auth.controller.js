@@ -1,6 +1,7 @@
 const catchAsync = require('../utils/catchAsync');
 const jwt = require("jsonwebtoken");
-const { userService, authService } = require('../services');
+const authService = require('../services/auth.service');
+const userService = require('../services/user.service');
 
 const register = catchAsync(async (req, res) => {
     const user = await userService.createUser(req.body);
@@ -14,7 +15,7 @@ const login = catchAsync(async (req, res) => {
     const user = await authService.login(email, password);
 
     const payload = {
-        sub: user._id.toString(),
+        id: user._id.toString(),
         email: user.email,
         name: user.name,
         role: user.role
