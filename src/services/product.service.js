@@ -6,12 +6,10 @@ const { deleteCloudinaryImage } = require('../utils/deleteImage');
 
 const createProduct = async (productBody) => {
     const category = await Category.findById(productBody.categoryId);
+
     if (!category) throw new ApiError(400, 'Danh mục không hợp lệ');
+
     const slug = slugify(productBody.name, { lower: true, strict: true, locale: 'vi' });
-    const existing = await Product.findOne({ slug });
-    if (existing) {
-        throw new ApiError(400, 'Tên sản phẩm đã tồn tại');
-    }
 
     productBody.slug = slug;
     const product = await Product.create(productBody);
