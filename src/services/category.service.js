@@ -1,8 +1,14 @@
 const Category = require('../models/category.model');
 const ApiError = require('../utils/ApiError');
+const slugify = require('slugify')
 const { deleteCloudinaryImage } = require('../utils/deleteImage');
 
 const createCategory = async (categoryBody) => {
+    const existing = await Category.find({ name: categoryBody.name });
+    if (existing) {
+        await deleteCloudinaryImage(categoryBody.image)
+        throw new ApiError(404, 'Danh mục đã tồn tại');
+    }
     const category = await Category.create(categoryBody);
     return category;
 }
@@ -15,7 +21,7 @@ const queryCategories = async (filter, options) => {
 const getCategory = async (categoryId) => {
     const category = await Category.findById(categoryId);
     if (!category) {
-        throw ApiError(404, 'Danh mục không tồn tại')
+        throw new ApiError(404, 'Danh mục không tồn tại')
     }
     return category;
 }
