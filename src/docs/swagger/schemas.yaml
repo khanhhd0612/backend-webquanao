@@ -1,0 +1,751 @@
+components:
+  schemas:
+    # ============ User Schemas ============
+    User:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        id:
+          type: string
+          description: User ID
+          example: "507f1f77bcf86cd799439011"
+        name:
+          type: string
+          description: User full name
+          example: "Nguyễn Văn A"
+        email:
+          type: string
+          format: email
+          description: User email address
+          example: "user@example.com"
+        password:
+          type: string
+          format: password
+          minLength: 8
+          description: User password (min 8 characters)
+          example: "password123"
+        role:
+          type: string
+          enum: [user, admin]
+          default: user
+          description: User role
+          example: "user"
+        phone:
+          type: string
+          description: User phone number
+          example: "0123456789"
+        address:
+          type: string
+          description: User address
+          example: "123 Main St, Hanoi"
+        avatar:
+          type: string
+          description: User avatar URL
+          example: "https://cloudinary.com/avatar.jpg"
+        isActive:
+          type: boolean
+          default: true
+          description: User active status
+        isEmailVerified:
+          type: boolean
+          default: false
+          description: Email verification status
+
+    RegisterRequest:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          example: "Nguyễn Văn A"
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: "password123"
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        password:
+          type: string
+          format: password
+          example: "password123"
+
+    LoginResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Đăng nhập thành công"
+        token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+    # ============ Category Schemas ============
+    Category:
+      type: object
+      required:
+        - name
+        - description
+      properties:
+        id:
+          type: string
+          description: Category ID
+          example: "507f1f77bcf86cd799439011"
+        name:
+          type: string
+          description: Category name
+          example: "Áo thun"
+        slug:
+          type: string
+          description: Category slug (auto-generated)
+          example: "ao-thun"
+        description:
+          type: string
+          description: Category description
+          example: "Áo thun nam nữ chất lượng cao"
+        image:
+          type: string
+          description: Category image URL
+          example: "https://cloudinary.com/category.jpg"
+        isActive:
+          type: boolean
+          default: true
+          description: Category active status
+
+    CategoryCreate:
+      type: object
+      required:
+        - name
+        - description
+      properties:
+        name:
+          type: string
+          example: "Áo thun"
+        description:
+          type: string
+          example: "Áo thun nam nữ chất lượng cao"
+        image:
+          type: string
+          format: binary
+          description: Category image file
+
+    # ============ Product Schemas ============
+    ProductVariant:
+      type: object
+      required:
+        - size
+        - color
+        - stock
+      properties:
+        size:
+          type: string
+          enum: [XS, S, M, L, XL, XXL]
+          description: Product size
+          example: "M"
+        color:
+          type: string
+          description: Product color
+          example: "Đỏ"
+        stock:
+          type: number
+          minimum: 0
+          description: Stock quantity
+          example: 100
+        price:
+          type: number
+          minimum: 0
+          description: Variant specific price (optional)
+          example: 250000
+        discountPrice:
+          type: number
+          minimum: 0
+          description: Variant discount price (optional)
+          example: 200000
+
+    Product:
+      type: object
+      required:
+        - name
+        - categoryId
+        - basePrice
+      properties:
+        id:
+          type: string
+          description: Product ID
+          example: "507f1f77bcf86cd799439011"
+        name:
+          type: string
+          description: Product name
+          example: "Áo thun nam basic"
+        slug:
+          type: string
+          description: Product slug (auto-generated)
+          example: "ao-thun-nam-basic"
+        description:
+          type: string
+          description: Product description
+          example: "Áo thun nam chất liệu cotton 100%"
+        categoryId:
+          type: string
+          description: Category ID
+          example: "507f1f77bcf86cd799439011"
+        basePrice:
+          type: number
+          minimum: 0
+          description: Base product price
+          example: 200000
+        baseDiscountPrice:
+          type: number
+          minimum: 0
+          description: Base discount price
+          example: 150000
+        images:
+          type: array
+          items:
+            type: string
+          description: Product image URLs
+          example: ["https://cloudinary.com/img1.jpg", "https://cloudinary.com/img2.jpg"]
+        variants:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductVariant'
+          description: Product variants
+        rating:
+          type: number
+          minimum: 0
+          maximum: 5
+          default: 0
+          description: Average product rating
+          example: 4.5
+        numReviews:
+          type: number
+          default: 0
+          description: Number of reviews
+          example: 25
+        isActive:
+          type: boolean
+          default: true
+          description: Product active status
+
+    ProductCreate:
+      type: object
+      required:
+        - name
+        - categoryId
+        - basePrice
+      properties:
+        name:
+          type: string
+          example: "Áo thun nam basic"
+        description:
+          type: string
+          example: "Áo thun nam chất liệu cotton 100%"
+        categoryId:
+          type: string
+          example: "507f1f77bcf86cd799439011"
+        basePrice:
+          type: number
+          example: 200000
+        baseDiscountPrice:
+          type: number
+          example: 150000
+        variants:
+          type: string
+          description: JSON string of variants array
+          example: '[{"size":"M","color":"Đỏ","stock":100,"price":200000}]'
+        images:
+          type: array
+          items:
+            type: string
+            format: binary
+          description: Product images (max 10 files)
+
+    # ============ Cart Schemas ============
+    CartVariant:
+      type: object
+      properties:
+        size:
+          type: string
+          enum: [XS, S, M, L, XL, XXL]
+          example: "M"
+        color:
+          type: string
+          example: "Đỏ"
+
+    CartItem:
+      type: object
+      required:
+        - productId
+        - quantity
+      properties:
+        id:
+          type: string
+          description: Cart item ID
+          example: "507f1f77bcf86cd799439011"
+        productId:
+          type: string
+          description: Product ID
+          example: "507f1f77bcf86cd799439011"
+        quantity:
+          type: number
+          minimum: 1
+          description: Quantity
+          example: 2
+        price:
+          type: number
+          minimum: 0
+          description: Price per item
+          example: 150000
+        variant:
+          $ref: '#/components/schemas/CartVariant'
+        subtotal:
+          type: number
+          minimum: 0
+          description: Subtotal amount
+          example: 300000
+
+    Cart:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Cart ID
+          example: "507f1f77bcf86cd799439011"
+        userId:
+          type: string
+          description: User ID
+          example: "507f1f77bcf86cd799439011"
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem'
+        totalAmount:
+          type: number
+          minimum: 0
+          description: Total cart amount
+          example: 300000
+        totalItems:
+          type: number
+          minimum: 0
+          description: Total items count
+          example: 2
+
+    AddToCartRequest:
+      type: object
+      required:
+        - productId
+        - quantity
+      properties:
+        productId:
+          type: string
+          example: "507f1f77bcf86cd799439011"
+        quantity:
+          type: number
+          minimum: 1
+          example: 2
+        variant:
+          $ref: '#/components/schemas/CartVariant'
+
+    UpdateCartItemRequest:
+      type: object
+      required:
+        - quantity
+      properties:
+        quantity:
+          type: number
+          minimum: 1
+          example: 3
+
+    # ============ Order Schemas ============
+    ShippingAddress:
+      type: object
+      required:
+        - fullName
+        - phone
+        - address
+        - city
+      properties:
+        fullName:
+          type: string
+          description: Recipient full name
+          example: "Nguyễn Văn A"
+        phone:
+          type: string
+          description: Recipient phone number
+          example: "0123456789"
+        address:
+          type: string
+          description: Delivery address
+          example: "123 Main Street"
+        city:
+          type: string
+          description: City
+          example: "Hà Nội"
+        country:
+          type: string
+          default: "Vietnam"
+          description: Country
+          example: "Vietnam"
+
+    OrderDetail:
+      type: object
+      required:
+        - productId
+        - quantity
+      properties:
+        productId:
+          type: string
+          description: Product ID
+          example: "507f1f77bcf86cd799439011"
+        quantity:
+          type: number
+          minimum: 1
+          description: Quantity
+          example: 2
+        price:
+          type: number
+          minimum: 0
+          description: Price per item
+          example: 150000
+        subtotal:
+          type: number
+          minimum: 0
+          description: Subtotal amount
+          example: 300000
+        variant:
+          $ref: '#/components/schemas/CartVariant'
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Order ID
+          example: "507f1f77bcf86cd799439011"
+        userId:
+          type: string
+          description: User ID
+          example: "507f1f77bcf86cd799439011"
+        shippingAddress:
+          $ref: '#/components/schemas/ShippingAddress'
+        paymentMethod:
+          type: string
+          enum: [COD, VNPay]
+          default: COD
+          description: Payment method
+          example: "COD"
+        paymentStatus:
+          type: string
+          enum: [pending, paid, failed]
+          default: pending
+          description: Payment status
+          example: "pending"
+        orderStatus:
+          type: string
+          enum: [pending, confirmed, shipped, delivered, cancelled]
+          default: pending
+          description: Order status
+          example: "pending"
+        shippingFee:
+          type: number
+          minimum: 0
+          default: 0
+          description: Shipping fee
+          example: 30000
+        totalPrice:
+          type: number
+          minimum: 0
+          description: Total order price
+          example: 330000
+        notes:
+          type: string
+          description: Order notes
+          example: "Giao hàng giờ hành chính"
+        orderDetails:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderDetail'
+
+    CreateOrderRequest:
+      type: object
+      required:
+        - shippingAddress
+        - orderDetails
+      properties:
+        shippingAddress:
+          $ref: '#/components/schemas/ShippingAddress'
+        paymentMethod:
+          type: string
+          enum: [COD, VNPay]
+          default: COD
+          example: "COD"
+        shippingFee:
+          type: number
+          default: 0
+          example: 30000
+        notes:
+          type: string
+          example: "Giao hàng giờ hành chính"
+        orderDetails:
+          type: array
+          items:
+            type: object
+            required:
+              - productId
+              - quantity
+            properties:
+              productId:
+                type: string
+                example: "507f1f77bcf86cd799439011"
+              quantity:
+                type: number
+                minimum: 1
+                example: 2
+              variant:
+                $ref: '#/components/schemas/CartVariant'
+
+    UpdateOrderStatusRequest:
+      type: object
+      properties:
+        orderStatus:
+          type: string
+          enum: [pending, confirmed, shipped, delivered, cancelled]
+          example: "confirmed"
+        paymentStatus:
+          type: string
+          enum: [pending, paid, failed]
+          example: "paid"
+
+    # ============ Review Schemas ============
+    Review:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Review ID
+          example: "507f1f77bcf86cd799439011"
+        productId:
+          type: string
+          description: Product ID
+          example: "507f1f77bcf86cd799439011"
+        userId:
+          type: string
+          description: User ID
+          example: "507f1f77bcf86cd799439011"
+        rating:
+          type: number
+          minimum: 1
+          maximum: 5
+          description: Rating (1-5 stars)
+          example: 5
+        comment:
+          type: string
+          description: Review comment
+          example: "Sản phẩm rất tốt, chất lượng"
+
+    CreateReviewRequest:
+      type: object
+      required:
+        - productId
+        - rating
+      properties:
+        productId:
+          type: string
+          example: "507f1f77bcf86cd799439011"
+        rating:
+          type: number
+          minimum: 1
+          maximum: 5
+          example: 5
+        comment:
+          type: string
+          example: "Sản phẩm rất tốt, chất lượng"
+
+    UpdateReviewRequest:
+      type: object
+      properties:
+        rating:
+          type: number
+          minimum: 1
+          maximum: 5
+          example: 4
+        comment:
+          type: string
+          example: "Sản phẩm tốt nhưng giao hàng hơi chậm"
+
+    # ============ WishList Schemas ============
+    WishListProduct:
+      type: object
+      properties:
+        productId:
+          type: string
+          description: Product ID
+          example: "507f1f77bcf86cd799439011"
+        addedAt:
+          type: string
+          format: date-time
+          description: Date added to wishlist
+          example: "2024-01-01T00:00:00.000Z"
+
+    WishList:
+      type: object
+      properties:
+        id:
+          type: string
+          description: WishList ID
+          example: "507f1f77bcf86cd799439011"
+        userId:
+          type: string
+          description: User ID
+          example: "507f1f77bcf86cd799439011"
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/WishListProduct'
+
+    AddToWishListRequest:
+      type: object
+      required:
+        - productId
+      properties:
+        productId:
+          type: string
+          example: "507f1f77bcf86cd799439011"
+
+    # ============ Payment Schemas ============
+    VNPayPaymentRequest:
+      type: object
+      required:
+        - orderId
+      properties:
+        orderId:
+          type: string
+          description: Order ID to pay
+          example: "507f1f77bcf86cd799439011"
+
+    VNPayPaymentResponse:
+      type: object
+      properties:
+        url:
+          type: string
+          description: VNPay payment URL
+          example: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?..."
+
+    # ============ Common Schemas ============
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Success message
+          example: "Thao tác thành công"
+        data:
+          type: object
+          description: Response data
+
+    PaginationResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items: {}
+          description: Array of results
+        page:
+          type: number
+          description: Current page number
+          example: 1
+        limit:
+          type: number
+          description: Items per page
+          example: 10
+        totalPages:
+          type: number
+          description: Total number of pages
+          example: 5
+        totalResults:
+          type: number
+          description: Total number of results
+          example: 50
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: number
+          description: Error code
+          example: 400
+        message:
+          type: string
+          description: Error message
+          example: "Dữ liệu không hợp lệ"
+
+  # ============ Common Responses ============
+  responses:
+    UnauthorizedError:
+      description: Authentication required or invalid token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 401
+            message: "Chưa đăng nhập hoặc token không hợp lệ"
+
+    ForbiddenError:
+      description: Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 403
+            message: "Không đủ quyền thực hiện thao tác này"
+
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 404
+            message: "Không tìm thấy tài nguyên"
+
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 400
+            message: "Dữ liệu không hợp lệ"
+
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 500
+            message: "Lỗi server"

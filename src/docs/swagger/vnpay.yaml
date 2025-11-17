@@ -1,0 +1,132 @@
+/vnpay/payment:
+  post:
+    tags:
+      - Payment
+    summary: Tạo link thanh toán VNPay
+    description: Tạo URL thanh toán VNPay cho đơn hàng
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/VNPayPaymentRequest'
+    responses:
+      '201':
+        description: Tạo link thanh toán thành công
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VNPayPaymentResponse'
+            example:
+              url: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?vnp_Amount=100000000&vnp_Command=pay&vnp_CreateDate=20240101120000&vnp_CurrCode=VND&vnp_IpAddr=127.0.0.1&vnp_Locale=vn&vnp_OrderInfo=507f1f77bcf86cd799439011&vnp_OrderType=other&vnp_ReturnUrl=http://localhost:4000/v1/vnpay/check-payment&vnp_TmnCode=DEMO&vnp_TxnRef=1704096000000&vnp_Version=2.1.0&vnp_SecureHash=abc123..."
+      '400':
+        $ref: '#/components/responses/ValidationError'
+      '401':
+        $ref: '#/components/responses/UnauthorizedError'
+      '404':
+        description: Đơn hàng không tồn tại hoặc đã thanh toán
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'
+            example:
+              code: 404
+              message: "Đơn hàng đã được thanh toán"
+
+/vnpay/check-payment:
+  get:
+    tags:
+      - Payment
+    summary: Xác nhận thanh toán VNPay
+    description: Callback từ VNPay sau khi thanh toán (VNPay IPN URL)
+    parameters:
+      - in: query
+        name: vnp_Amount
+        schema:
+          type: string
+        description: Số tiền thanh toán (VNĐ x 100)
+      - in: query
+        name: vnp_BankCode
+        schema:
+          type: string
+        description: Mã ngân hàng
+      - in: query
+        name: vnp_BankTranNo
+        schema:
+          type: string
+        description: Mã giao dịch tại ngân hàng
+      - in: query
+        name: vnp_CardType
+        schema:
+          type: string
+        description: Loại thẻ
+      - in: query
+        name: vnp_OrderInfo
+        schema:
+          type: string
+        description: Thông tin đơn hàng (OrderId)
+      - in: query
+        name: vnp_PayDate
+        schema:
+          type: string
+        description: Thời gian thanh toán
+      - in: query
+        name: vnp_ResponseCode
+        schema:
+          type: string
+        description: Mã phản hồi (00 = thành công)
+      - in: query
+        name: vnp_TmnCode
+        schema:
+          type: string
+        description: Mã website
+      - in: query
+        name: vnp_TransactionNo
+        schema:
+          type: string
+        description: Mã giao dịch VNPay
+      - in: query
+        name: vnp_TransactionStatus
+        schema:
+          type: string
+        description: Trạng thái giao dịch (00 = thành công)
+      - in: query
+        name: vnp_TxnRef
+        schema:
+          type: string
+        description: Mã tham chiếu giao dịch
+      - in: query
+        name: vnp_SecureHash
+        schema:
+          type: string
+        description: Chữ ký bảo mật
+    responses:
+      '200':
+        description: Thanh toán thành công
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Thanh toán thành công"
+            example:
+              message: "Thanh toán thành công"
+      '404':
+        description: Thanh toán thất bại hoặc chữ ký không hợp lệ
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'
+            examples:
+              invalidSignature:
+                value:
+                  code: 404
+                  message: "Thanh toán thất bại"
+              transactionFailed:
+                value:
+                  code: 404
+                  message: "Thanh toán thất bại"

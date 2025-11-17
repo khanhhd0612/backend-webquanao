@@ -1,0 +1,260 @@
+/product:
+  post:
+    tags:
+      - Products
+    summary: Tạo sản phẩm mới
+    description: Tạo sản phẩm mới với hình ảnh (chỉ Admin)
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            $ref: '#/components/schemas/ProductCreate'
+    responses:
+      '201':
+        description: Tạo sản phẩm thành công
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      '400':
+        $ref: '#/components/responses/ValidationError'
+      '401':
+        $ref: '#/components/responses/UnauthorizedError'
+      '403':
+        $ref: '#/components/responses/ForbiddenError'
+
+  get:
+    tags:
+      - Products
+    summary: Lấy danh sách sản phẩm
+    description: Lấy tất cả sản phẩm với phân trang và lọc
+    parameters:
+      - in: query
+        name: categoryId
+        schema:
+          type: string
+        description: Lọc theo ID danh mục
+      - in: query
+        name: isActive
+        schema:
+          type: boolean
+        description: Lọc theo trạng thái hoạt động
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        description: Số trang
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          default: 10
+        description: Số lượng mỗi trang
+      - in: query
+        name: sortBy
+        schema:
+          type: string
+          example: "createdAt:desc"
+        description: Sắp xếp theo trường
+    responses:
+      '200':
+        description: Lấy danh sách thành công
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/PaginationResponse'
+                - type: object
+                  properties:
+                    results:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Product'
+
+/product/{productId}:
+  get:
+    tags:
+      - Products
+    summary: Lấy chi tiết sản phẩm
+    description: Lấy thông tin chi tiết một sản phẩm
+    parameters:
+      - in: path
+        name: productId
+        required: true
+        schema:
+          type: string
+        description: ID của sản phẩm
+    responses:
+      '200':
+        description: Lấy thông tin thành công
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      '404':
+        $ref: '#/components/responses/NotFoundError'
+
+  put:
+    tags:
+      - Products
+    summary: Cập nhật sản phẩm
+    description: Cập nhật thông tin sản phẩm (chỉ Admin)
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: productId
+        required: true
+        schema:
+          type: string
+        description: ID của sản phẩm
+    requestBody:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            $ref: '#/components/schemas/ProductCreate'
+    responses:
+      '200':
+        description: Cập nhật thành công
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Cập nhật sản phẩm thành công"
+                product:
+                  $ref: '#/components/schemas/Product'
+      '401':
+        $ref: '#/components/responses/UnauthorizedError'
+      '403':
+        $ref: '#/components/responses/ForbiddenError'
+      '404':
+        $ref: '#/components/responses/NotFoundError'
+
+  delete:
+    tags:
+      - Products
+    summary: Xóa sản phẩm
+    description: Xóa một sản phẩm (chỉ Admin)
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: productId
+        required: true
+        schema:
+          type: string
+        description: ID của sản phẩm
+    responses:
+      '204':
+        description: Xóa thành công
+      '401':
+        $ref: '#/components/responses/UnauthorizedError'
+      '403':
+        $ref: '#/components/responses/ForbiddenError'
+      '404':
+        $ref: '#/components/responses/NotFoundError'
+
+/product/{productId}/images:
+  post:
+    tags:
+      - Products
+    summary: Thêm ảnh sản phẩm
+    description: Thêm ảnh vào sản phẩm (chỉ Admin)
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: productId
+        required: true
+        schema:
+          type: string
+        description: ID của sản phẩm
+    requestBody:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              images:
+                type: array
+                items:
+                  type: string
+                  format: binary
+                description: Ảnh sản phẩm (tối đa 10 ảnh)
+    responses:
+      '200':
+        description: Thêm ảnh thành công
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Thêm ảnh thành công"
+                product:
+                  $ref: '#/components/schemas/Product'
+      '401':
+        $ref: '#/components/responses/UnauthorizedError'
+      '403':
+        $ref: '#/components/responses/ForbiddenError'
+      '404':
+        $ref: '#/components/responses/NotFoundError'
+
+  delete:
+    tags:
+      - Products
+    summary: Xóa ảnh sản phẩm
+    description: Xóa một ảnh khỏi sản phẩm (chỉ Admin)
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: productId
+        required: true
+        schema:
+          type: string
+        description: ID của sản phẩm
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - imageUrl
+            properties:
+              imageUrl:
+                type: string
+                example: "https://cloudinary.com/image.jpg"
+                description: URL của ảnh cần xóa
+    responses:
+      '200':
+        description: Xóa ảnh thành công
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Xóa ảnh thành công"
+                product:
+                  $ref: '#/components/schemas/Product'
+      '401':
+        $ref: '#/components/responses/UnauthorizedError'
+      '403':
+        $ref: '#/components/responses/ForbiddenError'
+      '404':
+        $ref: '#/components/responses/NotFoundError'

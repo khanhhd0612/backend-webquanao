@@ -1,0 +1,169 @@
+/review:
+  post:
+    tags:
+      - Reviews
+    summary: Tạo đánh giá
+    description: Tạo đánh giá mới cho sản phẩm
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateReviewRequest'
+    responses:
+      '201':
+        description: Tạo đánh giá thành công
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Đánh giá thành công"
+                review:
+                  $ref: '#/components/schemas/Review'
+      '400':
+        $ref: '#/components/responses/ValidationError'
+      '401':
+        $ref: '#/components/responses/UnauthorizedError'
+
+  get:
+    tags:
+      - Reviews
+    summary: Lấy danh sách đánh giá
+    description: Lấy tất cả đánh giá của một sản phẩm
+    parameters:
+      - in: query
+        name: productId
+        required: true
+        schema:
+          type: string
+        description: ID của sản phẩm
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        description: Số trang
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          default: 10
+        description: Số lượng mỗi trang
+      - in: query
+        name: sortBy
+        schema:
+          type: string
+          example: "createdAt:desc"
+        description: Sắp xếp theo trường
+    responses:
+      '200':
+        description: Lấy danh sách thành công
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/PaginationResponse'
+                - type: object
+                  properties:
+                    results:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Review'
+      '400':
+        $ref: '#/components/responses/ValidationError'
+
+/review/{reviewId}:
+  put:
+    tags:
+      - Reviews
+    summary: Cập nhật đánh giá
+    description: Cập nhật đánh giá của người dùng
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: reviewId
+        required: true
+        schema:
+          type: string
+        description: ID của đánh giá
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateReviewRequest'
+    responses:
+      '200':
+        description: Cập nhật thành công
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Cập nhật đánh giá thành công"
+                review:
+                  $ref: '#/components/schemas/Review'
+      '400':
+        $ref: '#/components/responses/ValidationError'
+      '401':
+        $ref: '#/components/responses/UnauthorizedError'
+      '403':
+        description: Không thể chỉnh sửa đánh giá của người khác
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'
+            example:
+              code: 403
+              message: "Bạn không thể chỉnh sửa đánh giá của người khác"
+      '404':
+        $ref: '#/components/responses/NotFoundError'
+
+  delete:
+    tags:
+      - Reviews
+    summary: Xóa đánh giá
+    description: Xóa đánh giá của người dùng
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: reviewId
+        required: true
+        schema:
+          type: string
+        description: ID của đánh giá
+    responses:
+      '200':
+        description: Xóa thành công
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Xóa đánh giá thành công"
+      '401':
+        $ref: '#/components/responses/UnauthorizedError'
+      '403':
+        description: Không thể xóa đánh giá của người khác
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'
+            example:
+              code: 403
+              message: "Bạn không thể xóa đánh giá của người khác"
+      '404':
+        $ref: '#/components/responses/NotFoundError'

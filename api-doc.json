@@ -1,0 +1,1366 @@
+{
+    "info": {
+        "name": "E-commerce API",
+        "description": "API documentation for E-commerce platform with authentication, products, orders, cart, and wishlist management",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "version": "1.0.0"
+    },
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:4000/v1",
+            "type": "string"
+        },
+        {
+            "key": "token",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "item": [
+        {
+            "name": "Authentication",
+            "item": [
+                {
+                    "name": "Register",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"Password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/register",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "register"
+                            ]
+                        },
+                        "description": "Register a new user account"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Login",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set(\"token\", jsonData.token);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"Password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/login",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login"
+                            ]
+                        },
+                        "description": "Login with email and password. Returns JWT token."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Categories",
+            "item": [
+                {
+                    "name": "Create Category (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "name",
+                                    "value": "Electronics",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "description",
+                                    "value": "Electronic devices and accessories",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "image",
+                                    "type": "file",
+                                    "src": []
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/category",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "category"
+                            ]
+                        },
+                        "description": "Create a new category (Admin only). Requires image upload."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Categories",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/category?page=1&limit=10&sortBy=createdAt:desc",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "category"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                },
+                                {
+                                    "key": "sortBy",
+                                    "value": "createdAt:desc"
+                                }
+                            ]
+                        },
+                        "description": "Get paginated list of categories with optional filters"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Category by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/category/:categoryId",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "category",
+                                ":categoryId"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "categoryId",
+                                    "value": "675cf13a96e647fe3e77ee1b"
+                                }
+                            ]
+                        },
+                        "description": "Get single category by ID"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Category (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Updated Electronics\",\n  \"description\": \"Updated description\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/category/:categoryId",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "category",
+                                ":categoryId"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "categoryId",
+                                    "value": "675cf13a96e647fe3e77ee1b"
+                                }
+                            ]
+                        },
+                        "description": "Update category details (Admin only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Toggle Category Status (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/category/:categoryId/status",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "category",
+                                ":categoryId",
+                                "status"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "categoryId",
+                                    "value": "675cf13a96e647fe3e77ee1b"
+                                }
+                            ]
+                        },
+                        "description": "Toggle category active/inactive status (Admin only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Category (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/category/:categoryId",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "category",
+                                ":categoryId"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "categoryId",
+                                    "value": "675cf13a96e647fe3e77ee1b"
+                                }
+                            ]
+                        },
+                        "description": "Delete a category (Admin only)"
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Products",
+            "item": [
+                {
+                    "name": "Create Product (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "name",
+                                    "value": "iPhone 15 Pro",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "description",
+                                    "value": "Latest Apple smartphone",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "categoryId",
+                                    "value": "675cf13a96e647fe3e77ee1b",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "basePrice",
+                                    "value": "999",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "baseDiscountPrice",
+                                    "value": "899",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "variants",
+                                    "value": "[\n  {\n    \"size\": \"M\",\n    \"color\": \"Black\",\n    \"stock\": 50,\n    \"price\": 999,\n    \"discountPrice\": 899\n  },\n  {\n    \"size\": \"L\",\n    \"color\": \"White\",\n    \"stock\": 30,\n    \"price\": 999,\n    \"discountPrice\": 899\n  }\n]",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "images",
+                                    "type": "file",
+                                    "src": []
+                                },
+                                {
+                                    "key": "images",
+                                    "type": "file",
+                                    "src": []
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/product",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "product"
+                            ]
+                        },
+                        "description": "Create a new product with variants and images (Admin only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Products",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/product?page=1&limit=10&sortBy=createdAt:desc",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "product"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                },
+                                {
+                                    "key": "sortBy",
+                                    "value": "createdAt:desc"
+                                }
+                            ]
+                        },
+                        "description": "Get paginated list of products with optional filters"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Product by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/product/:productId",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "product",
+                                ":productId"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "productId",
+                                    "value": "675cf13a96e647fe3e77ee1c"
+                                }
+                            ]
+                        },
+                        "description": "Get single product with full details including variants"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Product (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "name",
+                                    "value": "Updated iPhone 15 Pro",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "basePrice",
+                                    "value": "1099",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "description",
+                                    "value": "Updated description",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "variants",
+                                    "value": "[\n  {\n    \"size\": \"M\",\n    \"color\": \"Black\",\n    \"stock\": 45,\n    \"price\": 1099\n  }\n]",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/product/:productId",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "product",
+                                ":productId"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "productId",
+                                    "value": "675cf13a96e647fe3e77ee1c"
+                                }
+                            ]
+                        },
+                        "description": "Update product details (Admin only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Add Product Images (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "images",
+                                    "type": "file",
+                                    "src": []
+                                },
+                                {
+                                    "key": "images",
+                                    "type": "file",
+                                    "src": []
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/product/:productId/images",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "product",
+                                ":productId",
+                                "images"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "productId",
+                                    "value": "675cf13a96e647fe3e77ee1c"
+                                }
+                            ]
+                        },
+                        "description": "Add additional images to existing product (Admin only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Remove Product Image (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"imageUrl\": \"https://res.cloudinary.com/example/image.jpg\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/product/:productId/images",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "product",
+                                ":productId",
+                                "images"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "productId",
+                                    "value": "675cf13a96e647fe3e77ee1c"
+                                }
+                            ]
+                        },
+                        "description": "Remove specific image from product (Admin only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Product (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/product/:productId",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "product",
+                                ":productId"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "productId",
+                                    "value": "675cf13a96e647fe3e77ee1c"
+                                }
+                            ]
+                        },
+                        "description": "Delete a product (Admin only)"
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Wishlist",
+            "item": [
+                {
+                    "name": "Get Wishlist",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/wish-list",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "wish-list"
+                            ]
+                        },
+                        "description": "Get current user's wishlist"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Add to Wishlist",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"productId\": \"675cf13a96e647fe3e77ee1c\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/wish-list",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "wish-list"
+                            ]
+                        },
+                        "description": "Add product to wishlist"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Remove from Wishlist",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/wish-list/:productId",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "wish-list",
+                                ":productId"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "productId",
+                                    "value": "675cf13a96e647fe3e77ee1c"
+                                }
+                            ]
+                        },
+                        "description": "Remove specific product from wishlist"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Clear Wishlist",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/wish-list",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "wish-list"
+                            ]
+                        },
+                        "description": "Clear entire wishlist"
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "VNPay Payment",
+            "item": [
+                {
+                    "name": "Create Payment URL",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"orderId\": \"675cf13a96e647fe3e77ee1e\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/vnpay/payment",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "vnpay",
+                                "payment"
+                            ]
+                        },
+                        "description": "Generate VNPay payment URL for an order. Returns URL to redirect user to VNPay payment gateway."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Check Payment Status",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/vnpay/check-payment?vnp_TxnRef=1234567890&vnp_TransactionStatus=00&vnp_OrderInfo=675cf13a96e647fe3e77ee1e",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "vnpay",
+                                "check-payment"
+                            ],
+                            "query": [
+                                {
+                                    "key": "vnp_TxnRef",
+                                    "value": "1234567890",
+                                    "description": "Transaction reference from VNPay"
+                                },
+                                {
+                                    "key": "vnp_TransactionStatus",
+                                    "value": "00",
+                                    "description": "Transaction status (00 = success)"
+                                },
+                                {
+                                    "key": "vnp_OrderInfo",
+                                    "value": "675cf13a96e647fe3e77ee1e",
+                                    "description": "Order ID"
+                                }
+                            ]
+                        },
+                        "description": "VNPay callback endpoint to verify payment. This is called automatically by VNPay after payment."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "User Management",
+            "item": [
+                {
+                    "name": "Update User Role (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"role\": \"admin\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/user/:userId",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "user",
+                                ":userId"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "userId",
+                                    "value": "675cf13a96e647fe3e77ee1a"
+                                }
+                            ]
+                        },
+                        "description": "Update user role (Admin only). Roles: user, admin"
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Cart",
+            "item": [
+                {
+                    "name": "Get Cart",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/cart",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cart"
+                            ]
+                        },
+                        "description": "Get current user's shopping cart"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Add to Cart",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"productId\": \"675cf13a96e647fe3e77ee1c\",\n  \"quantity\": 2,\n  \"variant\": {\n    \"size\": \"M\",\n    \"color\": \"Black\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/cart",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cart"
+                            ]
+                        },
+                        "description": "Add product with specific variant to cart"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Cart Item",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"quantity\": 5\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/cart/items/:itemId",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cart",
+                                "items",
+                                ":itemId"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "itemId",
+                                    "value": "675cf13a96e647fe3e77ee1d"
+                                }
+                            ]
+                        },
+                        "description": "Update quantity of cart item"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Remove Cart Item",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/cart/items/:itemId",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cart",
+                                "items",
+                                ":itemId"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "itemId",
+                                    "value": "675cf13a96e647fe3e77ee1d"
+                                }
+                            ]
+                        },
+                        "description": "Remove specific item from cart"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Clear Cart",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/cart",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cart"
+                            ]
+                        },
+                        "description": "Clear all items from cart"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Sync Cart Prices",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/cart/sync",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cart",
+                                "sync"
+                            ]
+                        },
+                        "description": "Sync cart prices with current product prices"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Cart Summary",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/cart/summary",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cart",
+                                "summary"
+                            ]
+                        },
+                        "description": "Get cart summary (total items, total amount)"
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Orders",
+            "item": [
+                {
+                    "name": "Create Order",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"shippingAddress\": {\n    \"fullName\": \"John Doe\",\n    \"phone\": \"0123456789\",\n    \"address\": \"123 Main St\",\n    \"city\": \"Hanoi\",\n    \"country\": \"Vietnam\"\n  },\n  \"paymentMethod\": \"COD\",\n  \"shippingFee\": 30000,\n  \"notes\": \"Please deliver before 5 PM\",\n  \"orderDetails\": [\n    {\n      \"productId\": \"675cf13a96e647fe3e77ee1c\",\n      \"quantity\": 2,\n      \"variant\": {\n        \"size\": \"M\",\n        \"color\": \"Black\"\n      }\n    }\n  ]\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/order",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "order"
+                            ]
+                        },
+                        "description": "Create a new order"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Orders (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/order?page=1&limit=10&sortBy=createdAt:desc",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "order"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                },
+                                {
+                                    "key": "sortBy",
+                                    "value": "createdAt:desc"
+                                }
+                            ]
+                        },
+                        "description": "Get all orders with filters (Admin only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get User's Orders",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/order/user/get",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "order",
+                                "user",
+                                "get"
+                            ]
+                        },
+                        "description": "Get current user's orders"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Order by ID (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/order/:orderId",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "order",
+                                ":orderId"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "orderId",
+                                    "value": "675cf13a96e647fe3e77ee1e"
+                                }
+                            ]
+                        },
+                        "description": "Get single order details (Admin only)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Order Status (Admin)",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"orderStatus\": \"confirmed\",\n  \"paymentStatus\": \"paid\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/order/:orderId/status",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "order",
+                                ":orderId",
+                                "status"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "orderId",
+                                    "value": "675cf13a96e647fe3e77ee1e"
+                                }
+                            ]
+                        },
+                        "description": "Update order status (Admin only). Status options: pending, confirmed, shipped, delivered, cancelled"
+                    },
+                    "response": []
+                }
+            ]
+        }
+    ],
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "exec": []
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "exec": []
+            }
+        }
+    ]
+}

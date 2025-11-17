@@ -1,0 +1,47 @@
+/user/{userId}:
+  patch:
+    tags:
+      - Users
+    summary: Cập nhật quyền người dùng
+    description: Cập nhật role của người dùng (chỉ Admin)
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        description: ID của người dùng
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - role
+            properties:
+              role:
+                type: string
+                enum: [user, admin]
+                example: "admin"
+    responses:
+      '200':
+        description: Cập nhật thành công
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Cập nhật thành công"
+                user:
+                  $ref: '#/components/schemas/User'
+      '401':
+        $ref: '#/components/responses/UnauthorizedError'
+      '403':
+        $ref: '#/components/responses/ForbiddenError'
+      '404':
+        $ref: '#/components/responses/NotFoundError'

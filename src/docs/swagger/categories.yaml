@@ -1,0 +1,211 @@
+/category:
+  post:
+    tags:
+      - Categories
+    summary: Tạo danh mục mới
+    description: Tạo danh mục sản phẩm mới (chỉ Admin)
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            $ref: '#/components/schemas/CategoryCreate'
+    responses:
+      '201':
+        description: Tạo danh mục thành công
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Tạo thành công"
+                category:
+                  $ref: '#/components/schemas/Category'
+      '401':
+        $ref: '#/components/responses/UnauthorizedError'
+      '403':
+        $ref: '#/components/responses/ForbiddenError'
+
+  get:
+    tags:
+      - Categories
+    summary: Lấy danh sách danh mục
+    description: Lấy tất cả danh mục với phân trang
+    parameters:
+      - in: query
+        name: name
+        schema:
+          type: string
+        description: Lọc theo tên danh mục
+      - in: query
+        name: isActive
+        schema:
+          type: boolean
+        description: Lọc theo trạng thái hoạt động
+      - in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        description: Số trang
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          default: 10
+        description: Số lượng mỗi trang
+      - in: query
+        name: sortBy
+        schema:
+          type: string
+          example: "name:asc"
+        description: Sắp xếp theo trường (format field:asc|desc)
+    responses:
+      '200':
+        description: Lấy danh sách thành công
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/PaginationResponse'
+                - type: object
+                  properties:
+                    results:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Category'
+
+/category/{categoryId}:
+  get:
+    tags:
+      - Categories
+    summary: Lấy chi tiết danh mục
+    description: Lấy thông tin chi tiết một danh mục
+    parameters:
+      - in: path
+        name: categoryId
+        required: true
+        schema:
+          type: string
+        description: ID của danh mục
+    responses:
+      '200':
+        description: Lấy thông tin thành công
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+      '404':
+        $ref: '#/components/responses/NotFoundError'
+
+  put:
+    tags:
+      - Categories
+    summary: Cập nhật danh mục
+    description: Cập nhật thông tin danh mục (chỉ Admin)
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: categoryId
+        required: true
+        schema:
+          type: string
+        description: ID của danh mục
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                example: "Áo thun mới"
+              description:
+                type: string
+                example: "Mô tả mới"
+    responses:
+      '200':
+        description: Cập nhật thành công
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Cập nhật thành công"
+                category:
+                  $ref: '#/components/schemas/Category'
+      '401':
+        $ref: '#/components/responses/UnauthorizedError'
+      '403':
+        $ref: '#/components/responses/ForbiddenError'
+      '404':
+        $ref: '#/components/responses/NotFoundError'
+
+  delete:
+    tags:
+      - Categories
+    summary: Xóa danh mục
+    description: Xóa một danh mục (chỉ Admin)
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: categoryId
+        required: true
+        schema:
+          type: string
+        description: ID của danh mục
+    responses:
+      '204':
+        description: Xóa thành công
+      '401':
+        $ref: '#/components/responses/UnauthorizedError'
+      '403':
+        $ref: '#/components/responses/ForbiddenError'
+      '404':
+        $ref: '#/components/responses/NotFoundError'
+
+/category/{categoryId}/status:
+  patch:
+    tags:
+      - Categories
+    summary: Thay đổi trạng thái danh mục
+    description: Bật/tắt trạng thái hoạt động của danh mục (chỉ Admin)
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: categoryId
+        required: true
+        schema:
+          type: string
+        description: ID của danh mục
+    responses:
+      '200':
+        description: Cập nhật trạng thái thành công
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Cập nhật thành công"
+                category:
+                  $ref: '#/components/schemas/Category'
+      '401':
+        $ref: '#/components/responses/UnauthorizedError'
+      '403':
+        $ref: '#/components/responses/ForbiddenError'
+      '404':
+        $ref: '#/components/responses/NotFoundError'

@@ -1,0 +1,110 @@
+/wish-list:
+  post:
+    tags:
+      - WishList
+    summary: Thêm vào danh sách yêu thích
+    description: Thêm sản phẩm vào danh sách yêu thích
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AddToWishListRequest'
+    responses:
+      '201':
+        description: Thêm thành công
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Thêm thành công"
+                wishList:
+                  $ref: '#/components/schemas/WishList'
+      '400':
+        $ref: '#/components/responses/ValidationError'
+      '401':
+        $ref: '#/components/responses/UnauthorizedError'
+      '404':
+        $ref: '#/components/responses/NotFoundError'
+
+  get:
+    tags:
+      - WishList
+    summary: Lấy danh sách yêu thích
+    description: Lấy danh sách yêu thích của người dùng hiện tại
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: Lấy danh sách thành công
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WishList'
+      '401':
+        $ref: '#/components/responses/UnauthorizedError'
+      '404':
+        $ref: '#/components/responses/NotFoundError'
+
+  delete:
+    tags:
+      - WishList
+    summary: Xóa toàn bộ danh sách yêu thích
+    description: Xóa tất cả sản phẩm trong danh sách yêu thích
+    security:
+      - bearerAuth: []
+    responses:
+      '204':
+        description: Xóa thành công
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Xóa danh sách thành công"
+                wishList:
+                  $ref: '#/components/schemas/WishList'
+      '401':
+        $ref: '#/components/responses/UnauthorizedError'
+      '404':
+        $ref: '#/components/responses/NotFoundError'
+
+/wish-list/{productId}:
+  patch:
+    tags:
+      - WishList
+    summary: Xóa sản phẩm khỏi danh sách yêu thích
+    description: Xóa một sản phẩm khỏi danh sách yêu thích
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: productId
+        required: true
+        schema:
+          type: string
+        description: ID của sản phẩm
+    responses:
+      '204':
+        description: Xóa thành công
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Xóa thành công"
+                wishList:
+                  $ref: '#/components/schemas/WishList'
+      '401':
+        $ref: '#/components/responses/UnauthorizedError'
+      '404':
+        $ref: '#/components/responses/NotFoundError'
