@@ -28,11 +28,15 @@ const toJSON = (schema) => {
                 }
             });
 
-            ret.id = ret._id.toString();
-            delete ret._id;
+            if (ret._id && ret._id.toString) {
+                ret.id = ret._id.toString();
+                delete ret._id;
+            } else if (ret._id === null || ret._id === undefined) {
+                delete ret._id;
+            }
             delete ret.__v;
-            delete ret.createdAt;
-            delete ret.updatedAt;
+            // delete ret.createdAt;
+            // delete ret.updatedAt;
             if (transform) {
                 return transform(doc, ret, options);
             }
