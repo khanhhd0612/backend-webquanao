@@ -3,7 +3,7 @@ const Product = require('../models/product.model');
 const ApiError = require('../utils/ApiError');
 
 const getOrCreatWishList = async (userId) => {
-    let wishList = await WishList.findOne({ userId });
+    let wishList = await WishList.findOne({ userId }).populate('products.productId', 'name images basePrice baseDiscountPrice isActive');
 
     if (!wishList) {
         wishList = await WishList.create({ userId, products: [] });
@@ -20,20 +20,21 @@ const getWishListByUserId = async (userId) => {
     });
 
     if (!wishList) {
-        throw new ApiError(404, 'Danh sách không tồn tại');
+        wishList = await WishList.create({ userId, products: [] });
+        wishList = await WishList.populate('products.productId', 'name images basePrice baseDiscountPrice isActive');
     }
 
     return wishList;
 };
 
-const removeFromWishList = async (userId, productId) => {
+const removeFromWishList = async (userId, pId) => {
     const wishList = await WishList.findOne({ userId })
 
     if (!wishList) {
         throw new ApiError(404, 'Danh sách không tồn tại');
     }
 
-    const product = wishList.products.id(productId);
+    const product = wishList.products.id(pId);
 
     if (!product) {
         throw new ApiError(404, 'Sản phẩm không tồn tại trong danh sách');
