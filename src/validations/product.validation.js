@@ -41,7 +41,7 @@ const updateProduct = {
             images: Joi.alternatives().try(
                 Joi.array().items(Joi.string().uri()),
                 Joi.array().items(Joi.string())
-            ).default([]),
+            ).optional(),
             variants: Joi.array().items(variantSchema).optional(),
             rating: Joi.number().min(0).max(5).optional(),
             numReviews: Joi.number().integer().min(0).optional(),

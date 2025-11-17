@@ -22,4 +22,6 @@ router.post('/:productId/images', auth('manageProduct'), upload.array('images', 
 
 router.delete('/:productId/images', auth('manageProduct'), productController.removeImage);
 
+router.patch('/:productId/status', auth('manageProduct'), productController.setProductStatus);
+
 module.exports = router;

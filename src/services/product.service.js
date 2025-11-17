@@ -17,8 +17,22 @@ const createProduct = async (productBody) => {
 };
 
 const queryProducts = async (filter, options) => {
-    const products = await Product.paginate(filter, options);
-    return products;
+    const { page = 1, limit = 10 } = options;
+
+    const results = await Product.find(filter)
+        .populate('categoryId', 'name')
+        .skip((page - 1) * limit)
+        .limit(limit);
+
+    const totalResults = await Product.countDocuments(filter);
+
+    return {
+        results,
+        totalResults,
+        limit,
+        page,
+        totalPages: Math.ceil(totalResults / limit),
+    };
 };
 
 const getProductById = async (productId) => {
@@ -40,7 +54,7 @@ const addImages = async (productId, imageUrls) => {
     return product;
 };
 
-const updateProductById = async (productId, updateBody) => {
+const updateProductById = async (productId, updateBody, newImageUrls = null) => {
     const product = await Product.findById(productId);
     if (!product) {
         throw new ApiError(404, 'Sản phẩm không tồn tại');
@@ -53,6 +67,12 @@ const updateProductById = async (productId, updateBody) => {
             locale: 'vi',
         });
     }
+
+    if (newImageUrls && newImageUrls.length > 0) {
+        product.images.push(...newImageUrls);
+    }
+
+    delete updateBody.images;
 
     Object.assign(product, updateBody);
     await product.save();
@@ -80,10 +100,20 @@ const deleteProductById = async (productId) => {
     if (product.images && product.images.length > 0) {
         await Promise.all(product.images.map(deleteCloudinaryImage));
     }
-    
+
     await product.deleteOne();
     return product;
 };
+
+const setProductStatus = async (productId) => {
+    const product = await Product.findById(productId);
+    if (!product) {
+        throw new ApiError(404, 'Sản phẩm không tồn tại');
+    }
+    product.isActive = !product.isActive
+    await product.save()
+    return product
+}
 
 module.exports = {
     createProduct,
@@ -92,5 +122,6 @@ module.exports = {
     updateProductById,
     deleteProductById,
     addImages,
-    removeImage
+    removeImage,
+    setProductStatus
 };

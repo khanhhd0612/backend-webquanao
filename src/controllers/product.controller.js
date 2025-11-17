@@ -33,13 +33,21 @@ const getProductsByCategory = catchAsync(async (req, res) => {
 })
 
 const updateProduct = catchAsync(async (req, res) => {
-    const product = await productService.updateProductById(req.params.productId, req.body);
+    const newImageUrls = req.files && req.files.length > 0
+        ? req.files.map((file) => file.path)
+        : null;  // null thay vì []
+
+    const product = await productService.updateProductById(
+        req.params.productId,
+        req.body,
+        newImageUrls
+    );
+
     res.status(200).json({
         message: 'Cập nhật sản phẩm thành công',
         product,
     });
 });
-
 const deleteProduct = catchAsync(async (req, res) => {
     await productService.deleteProductById(req.params.productId);
     res.status(204).json({
@@ -76,6 +84,14 @@ const removeImage = catchAsync(async (req, res) => {
     });
 });
 
+const setProductStatus = catchAsync(async (req, res) => {
+    const product = await productService.setProductStatus(req.params.productId)
+    res.status(200).json({
+        message: 'Cập nhật thành công',
+        product
+    });
+})
+
 module.exports = {
     createProduct,
     getProducts,
@@ -85,4 +101,5 @@ module.exports = {
     deleteProduct,
     addImages,
     removeImage,
+    setProductStatus
 };
