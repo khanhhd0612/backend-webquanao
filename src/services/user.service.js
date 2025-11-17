@@ -3,7 +3,7 @@ const ApiError = require('../utils/ApiError');
 
 const createUser = async (userBody) => {
     if (await User.isEmailTaken(userBody.email)) {
-        throw new ApiError(400, 'Email already taken');
+        throw new ApiError(400, 'Email đã được sử dụng');
     }
     return User.create(userBody);
 };
@@ -36,7 +36,7 @@ const updateUserById = async (userId, updateBody) => {
         throw new ApiError(404, 'User not found');
     }
     if (updateBody.email && (await User.isEmailTaken(updateBody.email, userId))) {
-        throw new ApiError(400, 'Email already taken');
+        throw new ApiError(400, 'Email đã được sử dụng');
     }
     Object.assign(user, updateBody);
     await user.save();
