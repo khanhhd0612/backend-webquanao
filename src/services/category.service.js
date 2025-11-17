@@ -5,7 +5,7 @@ const { deleteCloudinaryImage } = require('../utils/deleteImage');
 
 const createCategory = async (categoryBody) => {
     const existing = await Category.find({ name: categoryBody.name });
-    if (existing) {
+    if (!existing) {
         await deleteCloudinaryImage(categoryBody.image)
         throw new ApiError(404, 'Danh mục đã tồn tại');
     }
