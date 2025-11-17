@@ -33,8 +33,7 @@ const cartItemSchema = new mongoose.Schema(
             required: true,
             min: 0,
         },
-    },
-    { _id: true }
+    }
 );
 
 const cartSchema = new mongoose.Schema(
@@ -83,6 +82,9 @@ cartSchema.pre('save', function (next) {
 // check product variant tồn tại trong cart
 cartSchema.methods.findItemIndex = function (productId, variant) {
     return this.items.findIndex((item) => {
+        if (!item.productId || !productId) {
+            return false;
+        }
         const productMatch = item.productId.toString() === productId.toString();
 
         if (!variant || !variant.size || !variant.color) {

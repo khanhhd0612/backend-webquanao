@@ -40,7 +40,6 @@ const validateProductAndVariant = async (productId, variant, quantity) => {
     let price = product.baseDiscountPrice || product.basePrice;
     let stock = null;
 
-    // If variant specified, validate it
     if (variant && variant.size && variant.color) {
         const productVariant = product.variants.find(
             (v) => v.size === variant.size && v.color === variant.color
@@ -64,12 +63,10 @@ const validateProductAndVariant = async (productId, variant, quantity) => {
 const addToCart = async (userId, itemData) => {
     const { productId, quantity, variant } = itemData;
 
-    // Validate product and variant
     const { price } = await validateProductAndVariant(productId, variant, quantity);
 
     let cart = await getOrCreateCart(userId);
 
-    // Check if item already exists in cart
     const existingItemIndex = cart.findItemIndex(productId, variant);
 
     if (existingItemIndex > -1) {
@@ -93,7 +90,6 @@ const addToCart = async (userId, itemData) => {
 
     await cart.save();
 
-    // Populate and return
     cart = await cart.populate('items.productId', 'name slug images basePrice baseDiscountPrice isActive');
 
     return cart;
@@ -160,52 +156,6 @@ const clearCart = async (userId) => {
     return cart;
 };
 
-const syncCartPrices = async (userId) => {
-    const cart = await Cart.findOne({ userId });
-
-    if (!cart || cart.items.length === 0) {
-        return cart;
-    }
-
-    let updated = false;
-
-    for (const item of cart.items) {
-        const product = await Product.findById(item.productId);
-
-        if (!product || !product.isActive) {
-            // Remove inactive products
-            item.deleteOne();
-            updated = true;
-            continue;
-        }
-
-        let currentPrice = product.baseDiscountPrice || product.basePrice;
-
-        if (item.variant && item.variant.size && item.variant.color) {
-            const variant = product.variants.find(
-                (v) => v.size === item.variant.size && v.color === item.variant.color
-            );
-
-            if (variant) {
-                currentPrice = variant.discountPrice || variant.price || currentPrice;
-            }
-        }
-
-        // Update price if changed
-        if (item.price !== currentPrice) {
-            item.price = currentPrice;
-            item.subtotal = currentPrice * item.quantity;
-            updated = true;
-        }
-    }
-
-    if (updated) {
-        await cart.save();
-    }
-
-    return cart.populate('items.productId', 'name slug images basePrice baseDiscountPrice isActive');
-};
-
 const getCartSummary = async (userId) => {
     const cart = await getCartByUserId(userId);
 
@@ -223,6 +173,5 @@ module.exports = {
     updateCartItem,
     removeCartItem,
     clearCart,
-    syncCartPrices,
     getCartSummary,
 };

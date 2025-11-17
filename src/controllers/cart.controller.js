@@ -46,14 +46,6 @@ const clearCart = catchAsync(async (req, res) => {
     });
 });
 
-const syncCart = catchAsync(async (req, res) => {
-    const cart = await cartService.syncCartPrices(req.user.id);
-    res.status(200).json({
-        message: 'Đồng bộ giỏ hàng thành công',
-        cart,
-    });
-});
-
 const getCartSummary = catchAsync(async (req, res) => {
     const summary = await cartService.getCartSummary(req.user.id);
     res.status(200).json(summary);
@@ -65,6 +57,5 @@ module.exports = {
     updateCartItem,
     removeCartItem,
     clearCart,
-    syncCart,
     getCartSummary,
 };

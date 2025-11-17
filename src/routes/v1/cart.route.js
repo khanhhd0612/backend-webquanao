@@ -15,8 +15,6 @@ router.delete('/', auth(), cartController.clearCart);
 
 router.get('/summary', auth(), cartController.getCartSummary);
 
-router.post('/sync', auth(), cartController.syncCart);
-
 router.put('/items/:itemId', auth(), validate(cartValidation.updateCartItem), cartController.updateCartItem);
 
 router.delete('/items/:itemId', auth(), validate(cartValidation.removeCartItem), cartController.removeCartItem);
