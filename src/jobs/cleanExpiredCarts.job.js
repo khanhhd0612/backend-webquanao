@@ -1,5 +1,5 @@
 const cron = require('node-cron');
-const { Cart } = require('../models');
+const Cart = require('../models/cart.model');
 const logger = require('../config/logger');
 
 /**
