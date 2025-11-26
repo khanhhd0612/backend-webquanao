@@ -13,7 +13,7 @@ router.get('/', validate(categoryValidation.getCategories), categoryController.g
 
 router.get('/:categoryId', validate(categoryValidation.getCategory), categoryController.getCategory);
 
-router.put('/:categoryId', auth('manageCategories'), validate(categoryValidation.updateCategory), categoryController.updateCategory);
+router.put('/:categoryId', auth('manageCategories'), upload.single("image"), validate(categoryValidation.updateCategory), categoryController.updateCategory);
 
 router.delete('/:categoryId', auth('manageCategories'), validate(categoryValidation.getCategory), categoryController.deleteCategory);
 
