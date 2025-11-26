@@ -6,8 +6,8 @@ const auth = require('../../middlewares/auth');
 
 const router = express.Router();
 
-router.get('/', auth('manageUsers'), userController.queryUsers);
+router.get('/', auth('manager'), userController.queryUsers);
 
-router.patch('/:userId', auth('manageUsers'), validate(userValidation.updateRole), userController.updateRole);
+router.patch('/:userId', auth('manager'), validate(userValidation.updateRole), userController.updateRole);
 
 module.exports = router;

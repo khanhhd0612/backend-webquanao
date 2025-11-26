@@ -19,9 +19,9 @@ router.post('/:orderId/cancel', auth(), validate(orderValidation.cancelOrder), o
 router.post('/:orderId/payment/vnpay', auth(), orderController.confirmVnpayPayment);
 
 //admin 
-router.get('/', auth('manageOrders'), validate(orderValidation.getOrders), orderController.getOrders);
+router.get('/', auth('manager'), validate(orderValidation.getOrders), orderController.getOrders);
 
-router.patch('/:orderId/status', auth('manageOrders'), validate(orderValidation.updateOrderStatus), orderController.updateOrderStatus);
+router.patch('/:orderId/status', auth('manager'), validate(orderValidation.updateOrderStatus), orderController.updateOrderStatus);
 
 // chủ đơn hàng hoặc admin
 router.get('/:orderId', auth(), validate(orderValidation.getOrder), orderController.getOrder);

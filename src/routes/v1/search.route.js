@@ -8,7 +8,7 @@ router.get('/', auth(), searchController.globalSearch);
 
 router.get('/orders', auth(), searchController.searchOrders);
 
-router.get('/users', auth('manageUsers'), searchController.searchUsers);
+router.get('/users', auth('manager'), searchController.searchUsers);
 
 router.get('/products', auth(), searchController.searchProducts);
 

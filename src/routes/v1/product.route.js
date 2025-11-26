@@ -8,20 +8,20 @@ const parseFormData = require('../../middlewares/parseFormData');
 
 const router = express.Router();
 
-router.post('/', auth('manageProduct'), upload.array('images', 10), parseFormData, validate(productValidation.createProduct), productController.createProduct);
+router.post('/', auth('manager'), upload.array('images', 10), parseFormData, validate(productValidation.createProduct), productController.createProduct);
 
 router.get('/', validate(productValidation.getProducts), productController.getProducts);
 
 router.get('/:productId', validate(productValidation.getProduct), productController.getProduct);
 
-router.put('/:productId', auth('manageProduct'), upload.array('images', 10), parseFormData, validate(productValidation.updateProduct), productController.updateProduct);
+router.put('/:productId', auth('manager'), upload.array('images', 10), parseFormData, validate(productValidation.updateProduct), productController.updateProduct);
 
-router.delete('/:productId', auth('manageProduct'), validate(productValidation.deleteProduct), productController.deleteProduct);
+router.delete('/:productId', auth('manager'), validate(productValidation.deleteProduct), productController.deleteProduct);
 
-router.post('/:productId/images', auth('manageProduct'), upload.array('images', 10), productController.addImages);
+router.post('/:productId/images', auth('manager'), upload.array('images', 10), productController.addImages);
 
-router.delete('/:productId/images', auth('manageProduct'), productController.removeImage);
+router.delete('/:productId/images', auth('manager'), productController.removeImage);
 
-router.patch('/:productId/status', auth('manageProduct'), productController.setProductStatus);
+router.patch('/:productId/status', auth('manager'), productController.setProductStatus);
 
 module.exports = router;
