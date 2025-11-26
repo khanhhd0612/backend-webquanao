@@ -7,16 +7,16 @@ const categoryController = require('../../controllers/category.controller');
 
 const router = express.Router();
 
-router.post('/', auth('manageCategories'), upload.single("image"), validate(categoryValidation.createCategory), categoryController.createCategory);
+router.post('/', auth('manager'), upload.single("image"), validate(categoryValidation.createCategory), categoryController.createCategory);
 
 router.get('/', validate(categoryValidation.getCategories), categoryController.getCategories);
 
 router.get('/:categoryId', validate(categoryValidation.getCategory), categoryController.getCategory);
 
-router.put('/:categoryId', auth('manageCategories'), upload.single("image"), validate(categoryValidation.updateCategory), categoryController.updateCategory);
+router.put('/:categoryId', auth('manager'), upload.single("image"), validate(categoryValidation.updateCategory), categoryController.updateCategory);
 
-router.delete('/:categoryId', auth('manageCategories'), validate(categoryValidation.getCategory), categoryController.deleteCategory);
+router.delete('/:categoryId', auth('manager'), validate(categoryValidation.getCategory), categoryController.deleteCategory);
 
-router.patch('/:categoryId/status', auth('manageCategories'), validate(categoryValidation.getCategory), categoryController.setStatus);
+router.patch('/:categoryId/status', auth('manager'), validate(categoryValidation.getCategory), categoryController.setStatus);
 
 module.exports = router;
