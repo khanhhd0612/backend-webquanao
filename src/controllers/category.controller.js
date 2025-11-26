@@ -45,9 +45,7 @@ const updateCategory = catchAsync(async (req, res) => {
 
 const deleteCategory = catchAsync(async (req, res) => {
     await categoryService.deleteCategory(req.params.categoryId);
-    res.status(204).json({
-        message: 'Xóa thành công',
-    })
+    res.status(204)
 })
 
 module.exports = {

@@ -50,9 +50,7 @@ const updateProduct = catchAsync(async (req, res) => {
 });
 const deleteProduct = catchAsync(async (req, res) => {
     await productService.deleteProductById(req.params.productId);
-    res.status(204).json({
-        message: 'Xóa sản phẩm thành công',
-    });
+    res.status(204)
 });
 
 const addImages = catchAsync(async (req, res) => {
