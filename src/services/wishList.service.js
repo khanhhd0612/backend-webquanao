@@ -59,7 +59,7 @@ const addToWishList = async (userId, productData) => {
     }
 
     if (existingItemIndex < 0) {
-        wishList.products.push(productData)
+        wishList.products.push({ productId });
     }
     await wishList.save();
 

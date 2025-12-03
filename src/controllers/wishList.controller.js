@@ -21,14 +21,14 @@ const removeFromWishList = catchAsync(async (req, res) => {
     const userId = req.user.id;
     const wishList = await wishListService.removeFromWishList(userId, req.params.productId);
 
-    res.status(204)
+    res.status(204).send();
 })
 
 const clearWhishList = catchAsync(async (req, res) => {
     const userId = req.user.id;
     const wishList = await wishListService.clearWhishList(userId);
 
-    res.status(204)
+    res.status(204).send();
 })
 
 module.exports = {
