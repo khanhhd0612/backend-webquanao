@@ -19,12 +19,40 @@ const createProduct = async (productBody) => {
 const queryProducts = async (filter, options) => {
     const { page = 1, limit = 10 } = options;
 
-    const results = await Product.find(filter)
+    const query = {};
+
+    if (filter.categories) {
+        let categoryIds;
+
+        if (typeof filter.categories === 'string') {
+            categoryIds = filter.categories.split(',').filter(id => id.trim());
+        } else if (Array.isArray(filter.categories)) {
+            categoryIds = filter.categories;
+        } else {
+            categoryIds = [filter.categories];
+        }
+
+        if (categoryIds.length > 0) {
+            query.categoryId = categoryIds.length === 1 ? categoryIds[0] : { $in: categoryIds };
+        }
+    }
+    
+    if (filter.minPrice || filter.maxPrice) {
+        query.basePrice = {};
+        if (filter.minPrice) query.basePrice.$gte = Number(filter.minPrice);
+        if (filter.maxPrice) query.basePrice.$lte = Number(filter.maxPrice);
+    }
+
+    if (filter.isActive !== undefined) {
+        query.isActive = filter.isActive === 'true' || filter.isActive === true;
+    }
+
+    const results = await Product.find(query)
         .populate('categoryId', 'name')
         .skip((page - 1) * limit)
-        .limit(limit);
+        .limit(Number(limit));
 
-    const totalResults = await Product.countDocuments(filter);
+    const totalResults = await Product.countDocuments(query);
 
     return {
         results,
@@ -53,6 +81,12 @@ const addImages = async (productId, imageUrls) => {
     await product.save();
     return product;
 };
+
+const getProductByCategory = async (slug) => {
+    const category = await Category.findOne({ slug })
+    const products = await Product.find({ categoryId: category.id })
+    return products;
+}
 
 const updateProductById = async (productId, updateBody, newImageUrls = null) => {
     const product = await Product.findById(productId);
@@ -123,5 +157,6 @@ module.exports = {
     deleteProductById,
     addImages,
     removeImage,
-    setProductStatus
+    setProductStatus,
+    getProductByCategory
 };
