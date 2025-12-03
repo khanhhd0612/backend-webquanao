@@ -16,7 +16,7 @@ router.put('/:couponId', auth('manager'), validate(couponValidation.updateCoupon
 
 router.delete('/:couponId', auth('manager'), validate(couponValidation.getCouponById), couponController.deleteCoupon);
 
-router.patch('/:couponId', auth('manager'), validate(couponValidation.getCouponById), couponController.setCouponStatus);
+router.patch('/:couponId/status', auth('manager'), validate(couponValidation.getCouponById), couponController.setCouponStatus);
 
 router.post('/apply', auth(), validate(couponValidation.applyCoupon), couponController.applyCoupon);
 
