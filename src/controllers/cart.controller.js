@@ -2,7 +2,7 @@ const catchAsync = require('../utils/catchAsync');
 const cartService = require('../services/cart.service');
 
 const getCart = catchAsync(async (req, res) => {
-    const cart = await cartService.getCartByUserId(req.user.id);
+    const cart = await cartService.getOrCreateCart(req.user.id);
     res.status(200).json({
         message: 'Lấy giỏ hàng thành công',
         cart,
