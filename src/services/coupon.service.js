@@ -116,5 +116,6 @@ module.exports = {
     getCouponById,
     updateCoupon,
     deleteCoupon,
-    applyCoupon
+    applyCoupon,
+    setCouponStatus
 }
