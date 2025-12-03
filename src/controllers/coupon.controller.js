@@ -34,7 +34,7 @@ const updateCoupon = catchAsync(async (req, res) => {
 
 const deleteCoupon = catchAsync(async (req, res) => {
     await couponService.deleteCoupon(req.params.couponId);
-    res.status(204)
+    res.status(204).send();
 })
 
 const applyCoupon = catchAsync(async (req, res) => {

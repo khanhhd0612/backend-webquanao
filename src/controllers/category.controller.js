@@ -45,7 +45,7 @@ const updateCategory = catchAsync(async (req, res) => {
 
 const deleteCategory = catchAsync(async (req, res) => {
     await categoryService.deleteCategory(req.params.categoryId);
-    res.status(204)
+    res.status(204).send();
 })
 
 module.exports = {
