@@ -24,4 +24,6 @@ router.delete('/:productId/images', auth('manager'), productController.removeIma
 
 router.patch('/:productId/status', auth('manager'), productController.setProductStatus);
 
+router.get('/category/:slug', productController.getProductByCategory);
+
 module.exports = router;
