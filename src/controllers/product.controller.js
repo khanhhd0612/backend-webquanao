@@ -13,7 +13,7 @@ const createProduct = catchAsync(async (req, res) => {
 });
 
 const getProducts = catchAsync(async (req, res) => {
-    const filter = pick(req.query, ['categoryId', 'isActive']);
+    const filter = pick(req.query, ['categoryId', 'isActive', 'categories', 'search', 'minPrice', 'maxPrice']);
     const options = pick(req.query, ['sortBy', 'limit', 'page']);
     const result = await productService.queryProducts(filter, options);
     res.json(result);
@@ -50,7 +50,7 @@ const updateProduct = catchAsync(async (req, res) => {
 });
 const deleteProduct = catchAsync(async (req, res) => {
     await productService.deleteProductById(req.params.productId);
-    res.status(204)
+    res.status(204).send();
 });
 
 const addImages = catchAsync(async (req, res) => {
@@ -90,6 +90,11 @@ const setProductStatus = catchAsync(async (req, res) => {
     });
 })
 
+const getProductByCategory = catchAsync(async (req, res) => {
+    const products = await productService.getProductByCategory(req.params.slug)
+    res.send(products)
+})
+
 module.exports = {
     createProduct,
     getProducts,
@@ -99,5 +104,6 @@ module.exports = {
     deleteProduct,
     addImages,
     removeImage,
-    setProductStatus
+    setProductStatus,
+    getProductByCategory
 };
