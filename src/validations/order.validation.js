@@ -28,6 +28,8 @@ const createOrder = {
         }).required(),
         paymentMethod: Joi.string().valid('COD', 'VNPay').default('COD'),
         shippingFee: Joi.number().min(0).default(0),
+        couponId: Joi.string().custom(objectId).allow(null).optional(),
+        discount: Joi.number().min(0).allow(null).optional(),
         notes: Joi.string().allow(''),
         orderDetails: Joi.array()
             .items(orderDetailSchema)
