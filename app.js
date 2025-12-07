@@ -8,10 +8,13 @@ const ApiError = require('./src/utils/ApiError');
 const { errorConverter, errorHandler } = require('./src/middlewares/error');
 const passport = require('./src/config/passport');
 const { swaggerUi, swaggerSpec } = require('./src/config/swagger');
+const cookieParser = require('cookie-parser');
+const corsOptions = require('./src/config/cors')
 
 const app = express();
 
-app.use(cors());
+app.use(cookieParser());
+app.use(cors(corsOptions));
 
 app.use(express.json());
 

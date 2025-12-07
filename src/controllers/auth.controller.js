@@ -10,6 +10,7 @@ const register = catchAsync(async (req, res) => {
         user
     });
 });
+
 const login = catchAsync(async (req, res) => {
     const { email, password } = req.body;
     const user = await authService.login(email, password);
@@ -22,14 +23,32 @@ const login = catchAsync(async (req, res) => {
     };
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "24h" });
 
+    res.cookie('jwt', token, {
+        httpOnly: true, // không cho JS truy cập
+        secure: process.env.NODE_ENV === 'production', // Chỉ gửi qua HTTPS trong production
+        sameSite: 'strict', //chống CSRF
+        maxAge: 24 * 60 * 60 * 1000 // 24h
+    });
+
     res.status(200).json({
         message: "Đăng nhập thành công",
-        token
     });
 });
+
+const logout = catchAsync(async (req, res) => {
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        path: '/'
+    });
+
+    res.json({ success: true });
+})
 
 
 module.exports = {
     register,
-    login
+    login,
+    logout
 }
