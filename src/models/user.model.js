@@ -102,20 +102,6 @@ userSchema.pre('save', async function (next) {
 });
 
 /**
- * Virtual field
- */
-userSchema.virtual('profile').get(function () {
-    return {
-        name: this.name,
-        email: this.email,
-        role: this.role,
-        phone: this.phone,
-        address: this.address,
-        avatar: this.avatar,
-    };
-});
-
-/**
  * @typedef User
  */
 const User = mongoose.model('User', userSchema);
