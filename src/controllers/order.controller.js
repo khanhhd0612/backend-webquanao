@@ -1,10 +1,16 @@
 const catchAsync = require('../utils/catchAsync');
 const orderService = require('../services/order.service');
+const couponUsageService = require('../services/couponUsage.service');
+const cartService = require('../services/cart.service');
 const pick = require('../utils/pick');
 
 const createOrder = catchAsync(async (req, res) => {
     req.body.userId = req.user.id;
     const order = await orderService.createOrder(req.body);
+    if (req.body.couponId) {
+        await couponUsageService.checkOutWithCoupon(req.body.userId, order.id, req.body.couponId, req.body.discount)
+    }
+    await cartService.clearCart(req.user.id)
     res.status(201).send(order);
 });
 
@@ -22,7 +28,7 @@ const getOrder = catchAsync(async (req, res) => {
     // Kiểm tra quyền truy cập: Admin hoặc chủ đơn hàng
     if (!req.user.role || req.user.role !== 'admin') {
         if (order.userId._id.toString() !== req.user.id) {
-            return res.status(httpStatus.FORBIDDEN).send({
+            return res.status(403).send({
                 message: 'Bạn không có quyền xem đơn hàng này'
             });
         }
@@ -47,7 +53,6 @@ const getOrderOfUser = catchAsync(async (req, res) => {
 const getUserOrders = catchAsync(async (req, res) => {
     const options = pick(req.query, ['sortBy', 'limit', 'page']);
 
-    // Thêm filter theo status nếu có
     if (req.query.status) {
         options.status = req.query.status;
     }

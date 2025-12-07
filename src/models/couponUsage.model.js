@@ -8,6 +8,9 @@ const couponUsageSchema = new mongoose.Schema(
             ref: "Coupon",
             required: true
         },
+        discount: {
+            type: Number
+        },
         userId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
