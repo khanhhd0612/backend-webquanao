@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Order = require('../models/order.model');
 const Product = require('../models/product.model');
+const couponUsage = require('../models/couponUsage.model');
 const ApiError = require('../utils/ApiError');
 
 const validateProductAndVariant = async (productId, variant, quantity) => {
@@ -91,6 +92,9 @@ const createOrder = async (orderBody) => {
         }
 
         totalPrice += orderBody.shippingFee || 0;
+        if (orderBody.discount) {
+            totalPrice -= orderBody.discount;
+        }
 
         const order = await Order.create(
             [
