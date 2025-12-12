@@ -10,6 +10,7 @@ const wishListRoute = require('./wishList.route');
 const vnpayRoute = require('./vnpay.route');
 const searchRoute = require('./search.route');
 const couponRoute = require('./coupon.route');
+const addressRoute = require('./address.route');
 
 const router = express.Router();
 
@@ -57,6 +58,10 @@ const defaultRoutes = [
     {
         path: '/coupon',
         route: couponRoute,
+    },
+    {
+        path: '/addresses',
+        route: addressRoute
     },
 
 ];
