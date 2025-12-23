@@ -70,13 +70,6 @@ const forgotPassword = {
 
 const changePassword = {
     body: Joi.object().keys({
-        email: Joi.string().email().required().messages({
-            'string.base': 'Email phải là chuỗi',
-            'string.empty': 'Email không được để trống',
-            'string.email': 'Email không hợp lệ',
-            'any.required': 'Email là bắt buộc'
-        }),
-
         oldPassword: Joi.string().min(8).required().messages({
             'string.base': 'Mật khẩu cũ phải là chuỗi',
             'string.empty': 'Mật khẩu cũ không được để trống',
