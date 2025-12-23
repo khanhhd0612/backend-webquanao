@@ -44,16 +44,6 @@ const userSchema = mongoose.Schema(
             type: Boolean,
             default: false,
         },
-
-        phone: {
-            type: String,
-            trim: true,
-            validate(value) {
-                if (value && !validator.isMobilePhone(value, 'any')) {
-                    throw new Error('Số điện thoại không hợp lệ.');
-                }
-            },
-        },
         avatar: {
             type: String,
             default: '',
