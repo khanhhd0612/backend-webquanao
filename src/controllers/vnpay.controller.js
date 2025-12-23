@@ -10,8 +10,8 @@ const payMent = catchAsync(async (req, res) => {
 
     const order = await orderService.getOrderById(req.body.orderId);
 
-    if(order.paymentStatus == "paid"){
-        throw new ApiError(404,'Đơn hàng đã được thanh toán')
+    if (order.paymentStatus == "paid") {
+        throw new ApiError(404, 'Đơn hàng đã được thanh toán')
     }
 
     const vnpayResponse = await vnpay.buildPaymentUrl({
@@ -20,13 +20,13 @@ const payMent = catchAsync(async (req, res) => {
         vnp_TxnRef: Date.now().toString(),
         vnp_OrderInfo: req.body.orderId,
         vnp_OrderType: ProductCode.Other,
-        vnp_ReturnUrl: 'http://localhost:4000/v1/vnpay/check-payment',
+        vnp_ReturnUrl: 'http://localhost:4000/v1/payment/check-payment',
         vnp_Locale: VnpLocale.VN,
         vnp_CreateDate: dateFormat(now),
         vnp_ExpireDate: dateFormat(expire)
     })
 
-    return res.status(201).json(vnpayResponse);
+    return res.status(201).json({ paymentUrl: vnpayResponse });
 })
 
 const checkPayMent = catchAsync(async (req, res) => {
@@ -37,7 +37,7 @@ const checkPayMent = catchAsync(async (req, res) => {
     if (req.query.vnp_TransactionStatus !== "00") {
         throw new ApiError(404, 'Thanh toán thất bại');
     }
-    await orderService.payMentByVnpay(req.query.vnp_OrderInfo);
+    await orderService.paymentByVnpay(req.query.vnp_OrderInfo);
     res.status(200).json({
         message: "Thanh toán thành công",
     })
