@@ -30,9 +30,14 @@ wishListSchema.plugin(paginate);
 
 wishListSchema.methods.findItemIndex = function (productId) {
     return this.products.findIndex((item) => {
-        const id1 = item.productId._id ? item.productId._id.toString() : item.productId.toString();
+        if (!item.productId) return false;
 
-        return id1 === productId.toString();
+        const id =
+            item.productId._id
+                ? item.productId._id.toString()
+                : item.productId.toString();
+
+        return id === productId.toString();
     });
 };
 
