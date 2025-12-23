@@ -1,15 +1,14 @@
 const catchAsync = require('../utils/catchAsync');
 const reviewService = require('../services/review.service');
+const pick = require('../utils/pick');
 
 const createReview = catchAsync(async (req, res) => {
-    const review = await reviewService.createReview(req.user.id, req.body);
+    const review = await reviewService.createOrRestoreReview(req.user.id, req.body);
     res.status(201).json({ message: 'Đánh giá thành công', review });
 });
 
-const getReviews = catchAsync(async (req, res) => {
-    const filter = pick(req.query, ['productId']);
-    const options = pick(req.query, ['sortBy', 'limit', 'page']);
-    const result = await reviewService.getReviews(filter, options);
+const getReviewsByProduct = catchAsync(async (req, res) => {
+    const result = await reviewService.getReviewsByProduct(req.params.productId);
     res.status(200).json(result);
 });
 
@@ -25,7 +24,7 @@ const deleteReview = catchAsync(async (req, res) => {
 
 module.exports = {
     createReview,
-    getReviews,
+    getReviewsByProduct,
     updateReview,
     deleteReview,
 };

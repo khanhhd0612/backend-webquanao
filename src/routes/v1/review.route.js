@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.post('/', auth(), validate(reviewValidation.createReview), reviewController.createReview);
 
-router.get('/', validate(reviewValidation.getReviews), reviewController.getReviews);
+router.get('/product/:productId', validate(reviewValidation.getReviews), reviewController.getReviewsByProduct);
 
 router.put('/:reviewId', auth(), validate(reviewValidation.updateReview), reviewController.updateReview);
 

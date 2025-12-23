@@ -23,10 +23,21 @@ const reviewSchema = new mongoose.Schema(
             type: String,
             trim: true,
         },
+        isDeleted: {
+            type: Boolean,
+            default: false,
+            index: true,
+        },
     },
     {
         timestamps: true,
     }
+);
+
+// chỉ đánh giá 1 lần
+reviewSchema.index(
+    { productId: 1, userId: 1 },
+    { unique: true }
 );
 
 reviewSchema.plugin(toJSON);
