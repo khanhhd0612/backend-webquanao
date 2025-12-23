@@ -4,8 +4,8 @@ const Product = require('../models/product.model');
 const couponUsage = require('../models/couponUsage.model');
 const ApiError = require('../utils/ApiError');
 
-const validateProductAndVariant = async (productId, variant, quantity) => {
-    const product = await Product.findById(productId);
+const validateProductAndVariant = async (productId, variant, quantity, session) => {
+    const product = await Product.findById(productId).session(session);
 
     if (!product) {
         throw new ApiError(404, 'Sản phẩm không tồn tại');
@@ -31,8 +31,7 @@ const validateProductAndVariant = async (productId, variant, quantity) => {
 
         if (productVariant.stock < quantity) {
             throw new ApiError(
-                400,
-                `Biến thể ${requestedVariant.size}-${requestedVariant.color} chỉ còn ${productVariant.stock} sản phẩm trong kho`
+                400, `Biến thể ${requestedVariant.size}-${requestedVariant.color} chỉ còn ${productVariant.stock} sản phẩm trong kho`
             );
         }
 
@@ -67,7 +66,8 @@ const createOrder = async (orderBody) => {
             const { product, price, variantInfo } = await validateProductAndVariant(
                 item.productId,
                 item.variant,
-                item.quantity
+                item.quantity,
+                session
             );
 
             const subtotal = price * Number(item.quantity);
@@ -75,6 +75,9 @@ const createOrder = async (orderBody) => {
 
             detailedOrderDetails.push({
                 productId: item.productId,
+                productName: product.name,
+                productImage: product.images[0],
+                productSlug: product.slug,
                 quantity: item.quantity,
                 price,
                 subtotal,
@@ -168,16 +171,10 @@ const getOrders = async (filter, options) => {
 };
 
 const getOrdersOfUser = async (userId, options = {}) => {
-    const {
-        sortBy = '-createdAt',
-        limit = 10,
-        page = 1,
-        status
-    } = options;
+    const { sortBy = '-createdAt', limit = 10, page = 1, status } = options;
 
     const filter = { userId };
 
-    // Thêm filter theo status nếu có
     if (status) {
         filter.orderStatus = status;
     }
@@ -186,7 +183,6 @@ const getOrdersOfUser = async (userId, options = {}) => {
         .sort(sortBy)
         .limit(limit)
         .skip((page - 1) * limit)
-        .populate('orderDetails.productId', 'name images slug')
         .lean();
 
     const total = await Order.countDocuments(filter);
