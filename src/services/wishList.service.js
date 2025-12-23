@@ -57,6 +57,10 @@ const addToWishList = async (userId, productData) => {
     if (!product) {
         throw new ApiError(404, 'Sản phẩm không tồn tại');
     }
+    
+    if (!product.isActive) {
+        throw new ApiError(400, 'Sản phẩm không còn kinh doanh');
+    }
 
     if (existingItemIndex < 0) {
         wishList.products.push({ productId });
