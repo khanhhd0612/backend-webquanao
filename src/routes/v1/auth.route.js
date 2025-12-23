@@ -8,13 +8,13 @@ const router = express.Router();
 
 router.post('/register', validate(authValidation.register), authController.register);
 
-router.get('/me', auth(), (req, res) => {
-    res.json({ user: req.user });
-})
+router.post('/login', validate(authValidation.login), authController.login);
+
+router.post('/refresh', authController.refreshAccessToken);
+
+router.get('/profile', auth(), authController.getProfile);
 
 router.post('/change-password', auth(), validate(authValidation.changePassword), authController.changePassword);
-
-router.post('/login', validate(authValidation.login), authController.login);
 
 router.post('/logout', auth(), authController.logout);
 
