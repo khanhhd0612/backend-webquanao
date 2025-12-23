@@ -36,7 +36,7 @@ const login = catchAsync(async (req, res) => {
 });
 
 const logout = catchAsync(async (req, res) => {
-    res.clearCookie('token', {
+    res.clearCookie('jwt', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
@@ -44,11 +44,22 @@ const logout = catchAsync(async (req, res) => {
     });
 
     res.json({ success: true });
-})
+});
+
+const changePassword = catchAsync(async (req, res) => {
+    const { email, oldPassword, newPassword } = req.body;
+    const user = await authService.changePassword(email, oldPassword, newPassword);
+
+    res.status(200).json({
+        message: "Cập nhật mật khẩu thành công",
+    })
+
+});
 
 
 module.exports = {
     register,
     login,
-    logout
+    logout,
+    changePassword
 }
