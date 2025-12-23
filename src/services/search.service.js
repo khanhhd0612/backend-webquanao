@@ -82,7 +82,7 @@ const searchProducts = async (searchTerm, limit = 10) => {
         ]
     })
         .limit(limit)
-        .select('_id name price categoryId')
+        .select('_id name basePrice slug images baseDiscountPrice categoryId')
         .populate('categoryId', 'name')
         .sort({ createdAt: -1 })
         .lean();
@@ -90,7 +90,10 @@ const searchProducts = async (searchTerm, limit = 10) => {
     return products.map(product => ({
         id: product._id,
         name: product.name,
-        price: product.price,
+        slug: product.slug,
+        images: product.images,
+        basePrice: product.basePrice,
+        baseDiscountPrice: product.baseDiscountPrice,
         category: product.categoryId?.name || ''
     }));
 }
