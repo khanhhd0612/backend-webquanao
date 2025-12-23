@@ -12,7 +12,7 @@ router.get('/me', auth(), (req, res) => {
     res.json({ user: req.user });
 })
 
-router.post('/change-password',validate(authValidation.changePassword),  authController.changePassword);
+router.post('/change-password', auth(), validate(authValidation.changePassword), authController.changePassword);
 
 router.post('/login', validate(authValidation.login), authController.login);
 

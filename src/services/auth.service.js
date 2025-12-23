@@ -1,4 +1,5 @@
 const userService = require('./user.service');
+const User = require('../models/user.model');
 const ApiError = require('../utils/ApiError');
 
 const login = async (email, password) => {
@@ -9,8 +10,8 @@ const login = async (email, password) => {
     return user;
 };
 
-const changePassword = async (email, oldPassword, newPassword) => {
-    const user = await userService.getUserByEmail(email);
+const changePassword = async (userId, oldPassword, newPassword) => {
+    const user = await User.findById(userId);
 
     if (!user || !(await user.isPasswordMatch(oldPassword))) {
         throw new ApiError(401, 'Email hoặc mật khẩu không chính xác');

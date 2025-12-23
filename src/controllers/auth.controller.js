@@ -47,8 +47,9 @@ const logout = catchAsync(async (req, res) => {
 });
 
 const changePassword = catchAsync(async (req, res) => {
-    const { email, oldPassword, newPassword } = req.body;
-    const user = await authService.changePassword(email, oldPassword, newPassword);
+    const { oldPassword, newPassword } = req.body;
+    const userId = req.user.id;
+    const user = await authService.changePassword(userId, oldPassword, newPassword);
 
     res.status(200).json({
         message: "Cập nhật mật khẩu thành công",
