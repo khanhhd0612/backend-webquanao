@@ -7,7 +7,7 @@ const auth = require('../../middlewares/auth')
 
 const router = express.Router();
 
-router.post('/payment', auth(), validate(orderValidation.payment), vnpayController.payMent)
+router.post('/vnpay/create', auth(), validate(orderValidation.payment), vnpayController.payMent)
 
 router.get('/check-payment',vnpayController.checkPayMent)
 
