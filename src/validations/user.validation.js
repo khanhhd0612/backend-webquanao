@@ -111,11 +111,24 @@ const deleteUser = {
     }),
 };
 
+const updateProfile = {
+    body: Joi.object().keys({
+        name: Joi.string().messages({
+            'string.base': 'Tên phải là chuỗi'
+        }),
+    })
+        .min(1)
+        .messages({
+            'object.min': 'Phải có ít nhất một trường để cập nhật'
+        }),
+}
+
 module.exports = {
     createUser,
     getUsers,
     getUser,
     updateUser,
     deleteUser,
-    updateRole
+    updateRole,
+    updateProfile
 };

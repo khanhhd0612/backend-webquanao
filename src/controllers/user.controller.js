@@ -7,7 +7,7 @@ const queryUsers = catchAsync(async (req, res) => {
     const options = pick(req.query, ['sortBy', 'limit', 'page']);
     const users = await userService.queryUsers(filter, options);
     res.send(users)
-})
+});
 
 const updateRole = catchAsync(async (req, res) => {
     const user = await userService.updateRole(req.params.userId, req.body.role);
@@ -15,9 +15,19 @@ const updateRole = catchAsync(async (req, res) => {
         message: 'Cập nhật thành công',
         user
     });
+});
+
+const updateProfile = catchAsync(async (req, res) => {
+    const userId = req.user.id;
+    const user = await userService.updateProfile(userId, req.body);
+
+    res.status(200).json({
+        message: 'Cập nhật thành công',
+    });
 })
 
 module.exports = {
     updateRole,
-    queryUsers
+    queryUsers,
+    updateProfile
 }

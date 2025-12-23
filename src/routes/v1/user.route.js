@@ -10,4 +10,6 @@ router.get('/', auth('manager'), userController.queryUsers);
 
 router.patch('/:userId', auth('manager'), validate(userValidation.updateRole), userController.updateRole);
 
+router.put('/profile', auth(), validate(userValidation.updateProfile), userController.updateProfile);
+
 module.exports = router;

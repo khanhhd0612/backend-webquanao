@@ -1,4 +1,4 @@
-const User= require('../models/user.model');
+const User = require('../models/user.model');
 const ApiError = require('../utils/ApiError');
 
 const createUser = async (userBody) => {
@@ -14,13 +14,15 @@ const queryUsers = async (filter, options) => {
 };
 
 const getUserById = async (userId) => {
-    return User.findById(userId);
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new ApiError(404, 'User không tồn tại');
+    }
+    return user
 };
 const updateRole = async (userId, role) => {
     const user = await getUserById(userId);
-    if (!user) {
-        throw new ApiError(404, 'User not found');
-    }
+
     user.role = role;
     await user.save();
     return user;
@@ -32,9 +34,7 @@ const getUserByEmail = async (email) => {
 
 const updateUserById = async (userId, updateBody) => {
     const user = await getUserById(userId);
-    if (!user) {
-        throw new ApiError(404, 'User not found');
-    }
+
     if (updateBody.email && (await User.isEmailTaken(updateBody.email, userId))) {
         throw new ApiError(400, 'Email đã được sử dụng');
     }
@@ -45,10 +45,17 @@ const updateUserById = async (userId, updateBody) => {
 
 const deleteUserById = async (userId) => {
     const user = await getUserById(userId);
-    if (!user) {
-        throw new ApiError(404, 'User not found');
-    }
+
     await user.remove();
+    return user;
+};
+
+const updateProfile = async (userId, updateBody) => {
+    const user = await getUserById(userId);
+    if (updateBody.name) {
+        user.name = updateBody.name;
+    }
+    await user.save();
     return user;
 };
 
@@ -59,5 +66,6 @@ module.exports = {
     getUserByEmail,
     updateUserById,
     deleteUserById,
-    updateRole
+    updateRole,
+    updateProfile
 };
