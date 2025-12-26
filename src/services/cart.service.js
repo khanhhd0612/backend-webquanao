@@ -3,11 +3,11 @@ const Product = require('../models/product.model');
 const ApiError = require('../utils/ApiError');
 
 const getOrCreateCart = async (userId) => {
-    let cart = await Cart.findOne({ userId }).populate('items.productId', 'name images basePrice baseDiscountPrice isActive');
+    let cart = await Cart.findOne({ userId }).populate('items.productId', 'name slug images basePrice baseDiscountPrice isActive');
 
     if (!cart) {
         cart = await Cart.create({ userId, items: [] });
-        cart = await cart.populate('items.productId', 'name images basePrice baseDiscountPrice isActive');
+        cart = await cart.populate('items.productId', 'name slug images basePrice baseDiscountPrice isActive');
     }
 
     return cart;
@@ -166,6 +166,16 @@ const getCartSummary = async (userId) => {
     };
 };
 
+const removeCartItemsById = async (userId, cartItemIds) => {
+    const cart = await Cart.findOneAndUpdate(
+        { userId },
+        { $pull: { items: { _id: { $in: cartItemIds } } } },
+        { new: true }
+    ).populate('items.productId');
+
+    return cart;
+};
+
 module.exports = {
     getOrCreateCart,
     getCartByUserId,
@@ -174,4 +184,5 @@ module.exports = {
     removeCartItem,
     clearCart,
     getCartSummary,
+    removeCartItemsById
 };
