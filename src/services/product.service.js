@@ -5,14 +5,32 @@ const slugify = require('slugify');
 const { deleteCloudinaryImage } = require('../utils/deleteImage');
 
 const createProduct = async (productBody) => {
-    const category = await Category.findById(productBody.categoryId);
+    const { basePrice, baseDiscountPrice, categoryId, variants } = productBody;
+
+    const category = await Category.findById(categoryId);
 
     if (!category) throw new ApiError(400, 'Danh mục không hợp lệ');
+
+    if (basePrice < 0 || baseDiscountPrice < 0) {
+        throw new ApiError(400, 'Giá không hợp lệ');
+    }
+
+    if (basePrice < baseDiscountPrice) throw new ApiError(400, "Giá giảm không được lớn hơn giá gốc")
+
+    if (variants?.length) {
+        for (const variant of variants) {
+            if (variant.price < variant.discountPrice) {
+                throw new ApiError(400, 'Giá giảm không được lớn hơn giá gốc');
+            }
+        }
+    }
 
     const slug = slugify(productBody.name, { lower: true, strict: true, locale: 'vi' });
 
     productBody.slug = slug;
+
     const product = await Product.create(productBody);
+
     return product;
 };
 
@@ -36,7 +54,7 @@ const queryProducts = async (filter, options) => {
             query.categoryId = categoryIds.length === 1 ? categoryIds[0] : { $in: categoryIds };
         }
     }
-    
+
     if (filter.minPrice || filter.maxPrice) {
         query.basePrice = {};
         if (filter.minPrice) query.basePrice.$gte = Number(filter.minPrice);
@@ -88,18 +106,42 @@ const getProductByCategory = async (slug) => {
     return products;
 }
 
-const updateProductById = async (productId, updateBody, newImageUrls = null) => {
+const updateProductById = async (productId, updateBody, newImageUrls = []) => {
     const product = await Product.findById(productId);
     if (!product) {
         throw new ApiError(404, 'Sản phẩm không tồn tại');
     }
 
+    if (updateBody.categoryId) {
+        const category = await Category.findById(updateBody.categoryId);
+        if (!category) {
+            throw new ApiError(400, 'Danh mục không hợp lệ');
+        }
+    }
+
+    const basePrice = updateBody.basePrice ?? product.basePrice;
+    const baseDiscountPrice = updateBody.baseDiscountPrice ?? product.baseDiscountPrice;
+
+    if (baseDiscountPrice > basePrice) {
+        throw new ApiError(400, 'Giá giảm không được lớn hơn giá gốc');
+    }
+
+    if (updateBody.variants?.length) {
+        for (const variant of updateBody.variants) {
+            if (variant.discountPrice > variant.price) {
+                throw new ApiError(400, 'Giá giảm không được lớn hơn giá gốc');
+            }
+        }
+    }
+
     if (updateBody.name) {
-        updateBody.slug = slugify(updateBody.name, {
+        const slug = slugify(updateBody.name, {
             lower: true,
             strict: true,
             locale: 'vi',
         });
+
+        updateBody.slug = slug;
     }
 
     if (newImageUrls && newImageUrls.length > 0) {
@@ -110,6 +152,7 @@ const updateProductById = async (productId, updateBody, newImageUrls = null) => 
 
     Object.assign(product, updateBody);
     await product.save();
+
     return product;
 };
 
