@@ -10,7 +10,10 @@ const createOrder = catchAsync(async (req, res) => {
     if (req.body.couponId) {
         await couponUsageService.checkOutWithCoupon(req.body.userId, order.id, req.body.couponId, req.body.discount)
     }
-    await cartService.clearCart(req.user.id)
+
+    if (req.body.selectedItems && req.body.selectedItems.length > 0) {
+        await cartService.removeCartItemsById(req.user.id, req.body.selectedItems);
+    }
     res.status(201).send(order);
 });
 
@@ -37,18 +40,6 @@ const getOrder = catchAsync(async (req, res) => {
     res.send(order);
 });
 
-const getOrderOfUser = catchAsync(async (req, res) => {
-    const orders = await orderService.getOrdersOfUser(req.user.id);
-
-    if (orders.length <= 0) {
-        return res.json({
-            message: "Bạn chưa có đơn hàng nào",
-            results: []
-        });
-    }
-
-    res.send(orders);
-});
 
 const getUserOrders = catchAsync(async (req, res) => {
     const options = pick(req.query, ['sortBy', 'limit', 'page']);
@@ -76,16 +67,15 @@ const updateOrderStatus = catchAsync(async (req, res) => {
 
 const cancelOrder = catchAsync(async (req, res) => {
     const { orderId } = req.params;
-    const { reason } = req.body;
+    const { reason, note } = req.body;
 
-    // User chỉ có thể hủy đơn của mình, Admin có thể hủy tất cả
     const userId = req.user.role === 'admin' ? null : req.user.id;
 
-    const order = await orderService.cancelOrder(orderId, userId, reason);
+    const cancelledOrder = await orderService.cancelOrder(orderId, userId, reason, note);
 
-    res.send({
-        message: 'Đơn hàng đã được hủy thành công',
-        order
+    res.status(200).send({
+        message: 'Hủy đơn hàng thành công',
+        data: cancelledOrder
     });
 });
 
@@ -125,7 +115,6 @@ module.exports = {
     createOrder,
     getOrders,
     getOrder,
-    getOrderOfUser,
     getUserOrders,
     updateOrderStatus,
     cancelOrder,

@@ -281,7 +281,7 @@ const restoreInventory = async (order) => {
     }
 };
 
-const cancelOrder = async (orderId, userId = null, reason = null) => {
+const cancelOrder = async (orderId, userId, reason, note) => {
     const order = await getOrderById(orderId);
 
     if (userId && order.userId.toString() !== userId.toString()) {
@@ -292,6 +292,10 @@ const cancelOrder = async (orderId, userId = null, reason = null) => {
         throw new ApiError(400, 'Không thể hủy đơn hàng đã giao');
     }
 
+    if (order.orderStatus === 'shipped') {
+        throw new ApiError(400, 'Không thể hủy đơn hàng đang vận chuyển');
+    }
+
     if (order.orderStatus === 'cancelled') {
         throw new ApiError(400, 'Đơn hàng đã được hủy trước đó');
     }
@@ -299,10 +303,13 @@ const cancelOrder = async (orderId, userId = null, reason = null) => {
     // Hoàn lại tồn kho
     await restoreInventory(order);
 
+    order.cancellation = {
+        reason: reason,
+        note: note || '',
+        cancelledAt: new Date()
+    };
+
     order.orderStatus = 'cancelled';
-    if (reason) {
-        order.notes = order.notes ? `${order.notes}\nLý do hủy: ${reason}` : `Lý do hủy: ${reason}`;
-    }
 
     await order.save();
     return order;

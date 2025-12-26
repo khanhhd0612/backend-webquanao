@@ -126,6 +126,14 @@ const createOrder = {
                 'array.min': 'Đơn hàng phải có ít nhất 1 sản phẩm',
                 'any.required': 'Danh sách sản phẩm là bắt buộc'
             }),
+        selectedItems: Joi.array()
+            .items(Joi.string().custom(objectId).messages({
+                'string.custom': 'Item ID không hợp lệ'
+            }))
+            .optional()
+            .messages({
+                'array.base': 'Danh sách items được chọn phải là mảng',
+            }),
     }),
 };
 
@@ -203,13 +211,15 @@ const cancelOrder = {
         }),
     }),
     body: Joi.object({
-        reason: Joi.string().max(500).required().messages({
+        reason: Joi.string().trim().required().messages({
             'string.base': 'Lý do hủy phải là chuỗi',
             'string.empty': 'Lý do hủy không được để trống',
-            'string.max': 'Lý do hủy không được quá 500 ký tự',
             'any.required': 'Lý do hủy là bắt buộc'
         }),
-    }),
+        note: Joi.string().trim().max(200).allow('').optional().messages({
+            'string.max': 'Ghi chú không được quá 200 ký tự',
+        })
+    }).unknown(true),
 };
 
 const getUserOrders = {
