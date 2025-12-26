@@ -55,6 +55,26 @@ const orderDetailSchema = new mongoose.Schema(
     }
 );
 
+const cancellationSchema = new mongoose.Schema(
+    {
+        reason: {
+            type: String,
+            required: true,
+            trim: true,
+        },
+        note: {
+            type: String,
+            trim: true,
+            maxlength: 200,
+        },
+        cancelledAt: {
+            type: Date,
+            default: Date.now,
+        }
+    },
+    { _id: false }
+);
+
 const orderSchema = new mongoose.Schema(
     {
         userId: {
@@ -98,6 +118,7 @@ const orderSchema = new mongoose.Schema(
             type: String,
             trim: true,
         },
+        cancellation: cancellationSchema,
         orderDetails: [orderDetailSchema]
     },
     { timestamps: true }
