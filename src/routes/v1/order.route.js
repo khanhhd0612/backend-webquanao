@@ -8,9 +8,7 @@ const router = express.Router();
 
 router.post('/', auth(), validate(orderValidation.createOrder), orderController.createOrder);
 
-router.get('/user/get', auth(), orderController.getOrderOfUser);
-
-router.get('/user/orders', auth(), orderController.getUserOrders);
+router.get('/user', auth(), orderController.getUserOrders);
 
 router.get('/user/statistics', auth(), orderController.getUserOrderStatistics);
 
